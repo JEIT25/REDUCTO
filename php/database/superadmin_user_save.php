@@ -158,15 +158,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ans3 = password_hash($secure_answer3, PASSWORD_DEFAULT);
 
             $isBlocked = 0; // Active, skip approval since superadmin is adding
-            $sql = "INSERT INTO users (id, firstName, lastName, middleInitial, extension, sex, birthdate, age, purok, barangay, city, province, zipCode, country, username, email, password, role, is_blocked, secure_question, secure_answer, secure_question2, secure_answer2, secure_question3, secure_answer3) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $status = 'registered';
+            $sql = "INSERT INTO users (id, firstName, lastName, middleInitial, extension, sex, birthdate, age, purok, barangay, city, province, zipCode, country, username, email, password, role, is_blocked, status, secure_question, secure_answer, secure_question2, secure_answer2, secure_question3, secure_answer3) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 ob_clean();
                 echo json_encode(['success' => false, 'error' => 'Insert prepare failed: ' . $conn->error]);
                 exit;
             }
-            $stmt->bind_param("sssssssissssssssssissssss", $customId, $firstName, $lastName, $middleInitial, $extension, $sex, $birthdate, $age, $purok, $barangay, $city, $province, $zipCode, $country, $username, $email, $hashedPassword, $role, $isBlocked, $secure_question, $ans1, $secure_question2, $ans2, $secure_question3, $ans3);
+            $stmt->bind_param("sssssssissssssssssisssssss", $customId, $firstName, $lastName, $middleInitial, $extension, $sex, $birthdate, $age, $purok, $barangay, $city, $province, $zipCode, $country, $username, $email, $hashedPassword, $role, $isBlocked, $status, $secure_question, $ans1, $secure_question2, $ans2, $secure_question3, $ans3);
             
             if ($stmt->execute()) {
                 ob_clean();

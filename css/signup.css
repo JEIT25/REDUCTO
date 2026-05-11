@@ -237,6 +237,10 @@
     color: var(--text-heading);
     margin-bottom: 0.5rem;
 }
+.signup-form .form-group label .required {
+    color: var(--error-color, #ef4444);
+    margin-left: 2px;
+}
 .signup-form .form-group label .optional {
     color: var(--text-muted);
     font-weight: 400;

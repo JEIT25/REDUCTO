@@ -143,16 +143,17 @@ try {
     else {
         // CREATE
         $isBlocked = 0; // Admin adding user -> active
+        $status = 'registered';
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $ans1 = password_hash($secure_answer, PASSWORD_DEFAULT);
         $ans2 = password_hash($secure_answer2, PASSWORD_DEFAULT);
         $ans3 = password_hash($secure_answer3, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO users (id, firstName, lastName, middleInitial, extension, sex, birthdate, age, purok, barangay, city, province, zipCode, country, username, email, password, role, is_blocked, secure_question, secure_answer, secure_question2, secure_answer2, secure_question3, secure_answer3) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (id, firstName, lastName, middleInitial, extension, sex, birthdate, age, purok, barangay, city, province, zipCode, country, username, email, password, role, is_blocked, status, secure_question, secure_answer, secure_question2, secure_answer2, secure_question3, secure_answer3) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if ($stmt) {
-            $stmt->bind_param("sssssssissssssssssissssss", $customId, $firstName, $lastName, $middleInitial, $extension, $sex, $birthdate, $age, $purok, $barangay, $city, $province, $zipCode, $country, $username, $email, $hashedPassword, $role, $isBlocked, $secure_question, $ans1, $secure_question2, $ans2, $secure_question3, $ans3);
+            $stmt->bind_param("sssssssissssssssssisssssss", $customId, $firstName, $lastName, $middleInitial, $extension, $sex, $birthdate, $age, $purok, $barangay, $city, $province, $zipCode, $country, $username, $email, $hashedPassword, $role, $isBlocked, $status, $secure_question, $ans1, $secure_question2, $ans2, $secure_question3, $ans3);
             if ($stmt->execute()) {
                 ob_clean();
                 echo json_encode(['success' => true]);

@@ -61,8 +61,8 @@ try {
 
     if ($action === 'approve') {
         if ($actionType === 'register_basic-user' || $actionType === 'register_admin') {
-            // Approve registration = Unblock the user
-            $upd = $conn->prepare("UPDATE users SET is_blocked = 0 WHERE id = ?");
+            // Approve registration = Unblock the user and set status to registered
+            $upd = $conn->prepare("UPDATE users SET is_blocked = 0, status = 'registered' WHERE id = ?");
             $upd->bind_param('s', $targetId);
             $upd->execute();
             $upd->close();
