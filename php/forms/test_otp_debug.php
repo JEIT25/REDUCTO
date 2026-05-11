@@ -9,7 +9,7 @@ echo "--------------------------\n";
 
 // 1. Test Database Connectivity
 echo "Testing DB Connection...\n";
-require_once 'c:/xampp/htdocs/NAIG/php/database/db_connect.php';
+require_once 'c:/xampp/htdocs/REDUCTO/php/database/db_connect.php';
 
 if ($conn->connect_error) {
     echo "DB Connection Failed: " . $conn->connect_error . "\n";
@@ -21,7 +21,7 @@ else {
 
 // 2. Test Email Config
 echo "Testing Email Config include...\n";
-require_once 'c:/xampp/htdocs/NAIG/php/config/email_config.php';
+require_once 'c:/xampp/htdocs/REDUCTO/php/config/email_config.php';
 echo "Email Config included.\n";
 
 // 3. Mock Session and User Data
@@ -61,3 +61,4 @@ else {
 echo "--------------------------\n";
 echo "End of Debug.\n";
 ?>
+

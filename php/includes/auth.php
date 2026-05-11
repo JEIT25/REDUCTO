@@ -35,10 +35,10 @@ if (!function_exists('getBaseUrl')) {
         $doc = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/');
         $script = dirname($_SERVER['SCRIPT_NAME'] ?? '');
         // If we're in php/forms or php/admin etc., go up to project root
-        if (strpos($script, '/NAIG') !== false) {
+        if (strpos($script, '/REDUCTO') !== false) {
             return 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . preg_replace('#/php/.*$#', '', $script);
         }
-        return 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '/NAIG';
+        return 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '/REDUCTO';
     }
 }
 
@@ -65,11 +65,11 @@ if (!function_exists('requireLogin')) {
             $res = $stmt->get_result();
             if ($row = $res->fetch_assoc()) {
                 if ((int)$row['is_blocked'] === 1) {
-                    $role = $row['role'] ?? 'consumer';
+                    $role = $row['role'] ?? 'basic-user';
                     $uid = $user['id'];
                     logUserAction($uid, 'logout');
                     session_destroy();
-                    $err = ($role === 'consumer') ? 'blocked_consumer' : 'blocked_admin';
+                    $err = ($role === 'basic-user') ? 'blocked_consumer' : 'blocked_admin';
                     header('Location: ' . getBaseUrl() . '/php/auth/login.php?error=' . $err);
                     exit;
                 }
@@ -83,7 +83,7 @@ if (!function_exists('requireLogin')) {
         }
 
         $GLOBALS['user'] = $user;
-        $GLOBALS['userRole'] = $user['role'] ?? 'consumer';
+        $GLOBALS['userRole'] = $user['role'] ?? 'basic-user';
         return $user;
     }
 }
@@ -92,7 +92,7 @@ if (!function_exists('hasRole')) {
     /** Check if current user has a specific role. Admin includes superadmin. */
     function hasRole($requiredRole)
     {
-        $role = $GLOBALS['userRole'] ?? ($_SESSION['user']['role'] ?? 'consumer');
+        $role = $GLOBALS['userRole'] ?? ($_SESSION['user']['role'] ?? 'basic-user');
         if ($requiredRole === 'admin') {
             return in_array($role, ['admin', 'superadmin'], true);
         }
@@ -117,13 +117,13 @@ if (!function_exists('isSuperadmin')) {
 if (!function_exists('requireRole')) {
     /**
      * Require login and one of the given roles.
-     * @param string|array $allowedRoles e.g. 'superadmin' or ['consumer','admin']
+     * @param string|array $allowedRoles e.g. 'superadmin' or ['basic-user','admin']
      * @return array user row
      */
     function requireRole($allowedRoles)
     {
         $user = requireLogin();
-        $role = $user['role'] ?? 'consumer';
+        $role = $user['role'] ?? 'basic-user';
         if (!in_array($role, (array)$allowedRoles, true)) {
             // Redirect to their dashboard
             $base = getBaseUrl();
@@ -148,3 +148,4 @@ if (!function_exists('getDashboardRedirect')) {
         return getBaseUrl() . '/php/auth/dashboard.php';
     }
 }
+

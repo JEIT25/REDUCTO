@@ -1,7 +1,7 @@
 <?php
 // Database connection parameters
 $host = 'localhost';  // or 'localhost'
-$dbname = 'naig_db';
+$dbname = 'littlelands_db';
 $username = 'root';  // Default username for XAMPP
 $password = '';      // Default password for XAMPP is empty
 

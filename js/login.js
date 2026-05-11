@@ -1,10 +1,10 @@
 /**
- * NAIGO Login Page — JavaScript
+ * LittleLands Login Page — JavaScript
  * Handles: login form submit, lockout timer, password toggle, forgot password 4-step flow
  */
 (function () {
     const origin = window.location.origin;
-    const path = window.location.pathname.split('/NAIG/')[0] + '/NAIG';
+    const path = window.location.pathname.split('/REDUCTO/')[0] + '/REDUCTO';
     window.BASE_URL = window.BASE_URL || origin + path;
     window.LOGIN_API = window.LOGIN_API || window.BASE_URL + '/php/database/login.php';
     window.FORGOT_PASSWORD_API = window.FORGOT_PASSWORD_API || window.BASE_URL + '/php/database/forgot_password.php';
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         lockoutTimer.style.display = 'none';
                     }
                     if (lockoutModal) {
-                        lockoutModal.classList.remove('active');
+                        lockoutModal.classList.remove('show');
                     }
                     if (loginBtn) {
                         loginBtn.disabled = false;
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     lockoutTimer.textContent = `Too many failed attempts. Try again in ${remaining}s`;
                 }
                 if (lockoutModal && lockoutModalMessage) {
-                    lockoutModal.classList.add('active');
+                    lockoutModal.classList.add('show');
                     lockoutModalMessage.textContent = `Too many failed attempts. Try again in ${remaining}s.`;
                 }
                 if (loginBtn) {
@@ -83,10 +83,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Check stored lockout on page load
-    const storedLockout = localStorage.getItem('lockoutTime');
-    if (storedLockout) {
-        showLockout(parseInt(localStorage.getItem('failedAttempts') || '0'), parseInt(storedLockout));
+    // Check data attribute first (from server-side detection)
+    const lockoutData = document.getElementById('lockoutData');
+    if (lockoutData && lockoutData.dataset.lockoutActive === 'true') {
+        const time = parseInt(lockoutData.dataset.lockoutTime);
+        const attempts = parseInt(lockoutData.dataset.failedAttempts);
+        showLockout(attempts, time);
+    } else {
+        // Fallback to localStorage
+        const storedLockout = localStorage.getItem('lockoutTime');
+        if (storedLockout) {
+            showLockout(parseInt(localStorage.getItem('failedAttempts') || '0'), parseInt(storedLockout));
+        }
     }
 
     // Show forgot password link only after at least 1 failed attempt
@@ -99,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===== Login Form Submit =====
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        serverError.textContent = '';
+        if (serverError) serverError.textContent = '';
         if (passwordError) passwordError.textContent = '';
 
         const formData = new FormData(form);
@@ -117,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 data = JSON.parse(text);
             } catch (e) {
-                serverError.textContent = 'Server error. Please try again.';
+                if (serverError) serverError.textContent = 'Server error. Please try again.';
                 return;
             }
 
@@ -135,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (data.requirePw) {
                 if (passwordError) passwordError.textContent = data.requirePw;
-                else serverError.textContent = data.requirePw;
+                else if (serverError) serverError.textContent = data.requirePw;
             }
             if (data.failed_attempts) {
                 localStorage.setItem('failedAttempts', data.failed_attempts);
@@ -147,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         } catch (err) {
-            serverError.textContent = 'Network error. Please check your connection.';
+            if (serverError) serverError.textContent = 'Network error. Please check your connection.';
         }
     });
 
@@ -287,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const apiUrl = window.BASE_URL + '/php/forms/forgot_password_send_otp.php';
                 const res = await fetch(apiUrl, { method: 'POST' });
-                const text = await res.text(); // Get raw text first
+                const text = await res.text();
 
                 try {
                     const data = JSON.parse(text); // Try parsing

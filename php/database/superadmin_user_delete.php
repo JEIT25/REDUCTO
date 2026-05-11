@@ -19,7 +19,7 @@ if ($user_id === $_SESSION['user']['id']) {
     exit;
 }
 
-// Check for active dependencies (Orders, Reservations, etc.)
+// Check for active dependencies (Orders, bookings, etc.)
 // In a production environment, we might want to check these explicitly or let the FK constraint fail.
 // We'll use a try-catch or check the affected rows.
 
@@ -39,7 +39,7 @@ try {
 } catch (mysqli_sql_exception $e) {
     // Check for FK constraint violation (errno 1451)
     if ($e->getCode() == 1451 || strpos($e->getMessage(), 'foreign key constraint fails') !== false) {
-        echo json_encode(['success' => false, 'error' => 'Cannot delete user: This account has active history (Orders or Reservations) and cannot be removed.']);
+        echo json_encode(['success' => false, 'error' => 'Cannot delete user: This account has active history (Orders or bookings) and cannot be removed.']);
     } else {
         echo json_encode(['success' => false, 'error' => 'System error: ' . $e->getMessage()]);
     }
@@ -48,3 +48,4 @@ try {
 $stmt->close();
 $conn->close();
 ?>
+

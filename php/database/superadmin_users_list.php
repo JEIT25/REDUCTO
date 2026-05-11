@@ -32,8 +32,8 @@ $countResult = $conn->query($countQuery);
 $totalUsers = $countResult->fetch_assoc()['total'];
 $totalPages = ceil($totalUsers / $limit);
 
-// Fetch users
-$query = "SELECT id, firstName, lastName, middleInitial, extension, sex, birthdate, purok, barangay, city, province, zipCode, country, username, email, role, is_blocked 
+// Fetch users (Returning birthdate AS IS for JS to handle)
+$query = "SELECT id, firstName, lastName, middleInitial, extension, sex, birthdate, age, purok, barangay, city, province, zipCode, country, username, email, role, is_blocked 
           FROM users 
           WHERE $where 
           ORDER BY role, username 

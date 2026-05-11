@@ -52,7 +52,7 @@ try {
 
     // Permission check: superadmin can review everything; admin can only review registration approvals
     $actionType = $approval['action_type'] ?? '';
-    if ($role !== 'superadmin' && !($role === 'admin' && $actionType === 'register_consumer')) {
+    if ($role !== 'superadmin' && !($role === 'admin' && $actionType === 'register_basic-user')) {
         $conn->close();
         ob_clean();
         http_response_code(403);
@@ -77,21 +77,21 @@ try {
             $del->execute();
             $del->close();
             $msg = 'User deleted.';
-        } elseif ($actionType === 'delete_restaurant' && $targetType === 'restaurant') {
+        } elseif ($actionType === 'delete_playground' && $targetType === 'playground') {
             $tid = (int) $targetId;
-            $del = $conn->prepare("DELETE FROM restaurants WHERE id = ?");
+            $del = $conn->prepare("DELETE FROM playgrounds WHERE id = ?");
             $del->bind_param('i', $tid);
             $del->execute();
             $del->close();
-            $msg = 'Restaurant deleted.';
-        } elseif ($actionType === 'delete_menu_item' && $targetType === 'menu_item') {
+            $msg = 'playground deleted.';
+        } elseif ($actionType === 'delete_play_package' && $targetType === 'play_package') {
             $tid = (int) $targetId;
-            $del = $conn->prepare("DELETE FROM menu_items WHERE id = ?");
+            $del = $conn->prepare("DELETE FROM play_packages WHERE id = ?");
             $del->bind_param('i', $tid);
             $del->execute();
             $del->close();
-            $msg = 'Menu item deleted.';
-        } elseif ($actionType === 'register_consumer' && $targetType === 'user') {
+            $msg = 'Play Package deleted.';
+        } elseif ($actionType === 'register_basic-user' && $targetType === 'user') {
             // Approve new consumer registration: activate account
             $upd = $conn->prepare("UPDATE users SET is_blocked = 0 WHERE id = ?");
             $upd->bind_param('s', $targetId);
@@ -115,3 +115,5 @@ try {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 ob_end_flush();
+
+

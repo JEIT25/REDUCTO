@@ -29,7 +29,7 @@ $base = getBaseUrl();
 include __DIR__ . '/../includes/layout/sidebar.php'; ?>
         <main class="dashboard-main">
             <h1>Manage Orders</h1>
-            <div id="ordersTable"></div>
+            <div id="ordersArea"></div>
         </main>
         <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
     </div>
@@ -49,7 +49,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                     const totalPages = data.pagination?.total_pages || 1;
 
                     if (!data.orders.length) {
-                        document.getElementById('ordersTable').innerHTML = `
+                        document.getElementById('ordersArea').innerHTML = `
                             <div class="empty-state" style="padding: 3rem; text-align: center; border: 2px dashed var(--border-light); border-radius: var(--radius-lg);">
                                 <p style="color: var(--text-muted); margin: 0;">No orders found.</p>
                             </div>`;
@@ -58,7 +58,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
                     let html = '<table class="orders-table" style="width:100%; border-collapse:collapse;"><thead>' +
                         '<tr style="border-bottom: 2px solid var(--bg-body); text-align: left; color: var(--text-muted);">' +
-                        '<th style="padding: 1rem;">ID</th><th style="padding: 1rem;">Restaurant</th><th style="padding: 1rem;">Customer</th><th style="padding: 1rem;">Total</th><th style="padding: 1rem;">Status</th><th style="padding: 1rem;">Date</th><th style="padding: 1rem;">Update</th></tr></thead><tbody>';
+                        '<th style="padding: 1rem;">ID</th><th style="padding: 1rem;">playground</th><th style="padding: 1rem;">Customer</th><th style="padding: 1rem;">Total</th><th style="padding: 1rem;">Status</th><th style="padding: 1rem;">Date</th><th style="padding: 1rem;">Update</th></tr></thead><tbody>';
 
                     data.orders.forEach(o => {
                         const sc = o.status === 'delivered' ? 'status-ok' : o.status === 'cancelled' ? 'status-trash' : 'status-pending';
@@ -67,7 +67,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
                         html += `<tr style="border-bottom: 1px solid var(--border-color);">
                             <td style="padding: 1rem; font-family: monospace; font-weight: 600; color: var(--primary-color);">#${o.id}</td>
-                            <td style="padding: 1rem; font-weight: 500;">${escapeHtml(o.restaurant_name)}</td>
+                            <td style="padding: 1rem; font-weight: 500;">${escapeHtml(o.playground_name)}</td>
                             <td style="padding: 1rem; color: var(--text-muted);">User #${escapeHtml(o.user_id)}</td>
                             <td style="padding: 1rem; font-weight: 700;">₱${parseFloat(o.total_amount).toFixed(2)}</td>
                             <td style="padding: 1rem;"><span class="status-badge no-dot ${sc}">${o.status}</span></td>
@@ -93,7 +93,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                         </div>
                     </div>`;
 
-                    document.getElementById('ordersTable').innerHTML = html;
+                    document.getElementById('ordersArea').innerHTML = html;
 
                     document.querySelectorAll('.status-select').forEach(sel => {
                         sel.addEventListener('change', () => {
@@ -110,7 +110,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                         });
                     });
                 })
-                .catch(() => document.getElementById('ordersTable').innerHTML = '<p class="muted">Error loading orders.</p>');
+                .catch(() => document.getElementById('ordersArea').innerHTML = '<p class="muted">Error loading orders.</p>');
         }
 
         loadOrders();
@@ -118,3 +118,5 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
     </script>
 </body>
 </html>
+
+

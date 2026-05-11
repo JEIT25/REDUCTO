@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../includes/auth_check.php';
-requireRole('consumer');
+requireRole('basic-user');
 
 $basePath = getBasePath(__FILE__);
 $pageTitle = 'My Cart';
@@ -27,7 +27,7 @@ $pageTitle = 'My Cart';
 
         .cart-details { flex: 1; }
         .cart-details h3 { margin: 0 0 0.25rem 0; font-size: 1.1rem; font-weight: 700; color: var(--text-heading); }
-        .cart-details .restaurant-name { margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem; }
+        .cart-details .playground-name { margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem; }
         .cart-details .price { font-size: 1rem; font-weight: 600; color: var(--primary-color); }
 
         .cart-actions { display: flex; align-items: center; gap: 0.75rem; margin-left: 1rem; }
@@ -55,7 +55,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                         <h1 class="page-title" style="margin-bottom: 0.5rem;">Shopping Cart</h1>
                         <p class="page-subtitle">Review your items and checkout.</p>
                     </div>
-                    <a href="order_food.php" class="btn-secondary"><i class="fa-solid fa-arrow-left"></i> Continue Shopping</a>
+                    <a href="book_package.php" class="btn-secondary"><i class="fa-solid fa-arrow-left"></i> Continue Shopping</a>
                 </div>
 
                 <div id="cartContent" style="display: none;">
@@ -89,7 +89,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                     <div style="font-size: 4rem; color: var(--border-color); margin-bottom: 1.5rem;"><i class="fa-solid fa-cart-shopping"></i></div>
                     <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">Your cart is empty</h2>
                     <p class="muted" style="margin-bottom: 2rem;">Looks like you haven't added anything to your cart yet.</p>
-                    <a href="order_food.php" class="btn-primary" style="padding: 0.75rem 2rem;">Start Ordering</a>
+                    <a href="book_package.php" class="btn-primary" style="padding: 0.75rem 2rem;">Start Ordering</a>
                 </div>
             </div>
         </main>
@@ -120,10 +120,10 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                         subTotal += itemTotal; // Using server provided item total logic usually but summing here for now
 
                         html += `<div class="cart-item">
-                            <div class="cart-icon"><i class="fa-solid fa-utensils"></i></div>
+                            <div class="cart-icon"><i class="fa-solid fa-shapes"></i></div>
                             <div class="cart-details">
                                 <h3>${escapeHtml(item.name)}</h3>
-                                <div class="restaurant-name"><i class="fa-solid fa-store"></i> ${escapeHtml(item.restaurant_name)}</div>
+                                <div class="playground-name"><i class="fa-solid fa-tent"></i> ${escapeHtml(item.playground_name)}</div>
                                 <div class="price">₱${price.toFixed(2)}</div>
                             </div>
                             <div class="cart-actions">
@@ -163,7 +163,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                 })
                 .catch(e => {
                     console.error(e);
-                    alert('Failed to update cart. Please try again.');
+                    alert('Failed to UPDATE booking_cart. Please try again.');
                 });
         }
 
@@ -180,3 +180,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
     </script>
 </body>
 </html>
+
+
+
+

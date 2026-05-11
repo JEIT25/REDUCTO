@@ -28,13 +28,13 @@
     outline: none;
 }
 
-.favorites-grid.menu-grid {
+.favorites-grid.Packages-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: var(--space-5, 1.25rem);
 }
 
 /* Favorite card: heart in corner, single Order again button */
-.favorite-card.menu-item {
+.favorite-card.Packages-item {
     position: relative;
     padding-top: var(--space-8, 2rem);
 }
@@ -69,7 +69,7 @@
 }
 
 /* Single "Order again" button – no dropdown, clear CTA */
-.favorite-card .menu-item-actions {
+.favorite-card .Packages-item-actions {
     margin-top: auto;
     padding-top: var(--space-3, 0.75rem);
 }
@@ -102,3 +102,4 @@
 .favorites-empty.empty-state {
     grid-column: 1 / -1;
 }
+

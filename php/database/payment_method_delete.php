@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/db_connect.php';
 require_once __DIR__ . '/../includes/auth.php';
 
-requireRole('consumer');
+requireRole('basic-user');
 $user_id = $_SESSION['user']['id'];
 $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
 if ($id <= 0) {

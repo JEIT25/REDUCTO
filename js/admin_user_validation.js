@@ -78,12 +78,6 @@ const AdminUserValidation = (function () {
         // Age / birthdate
         if (!validateAge()) ok = false;
 
-        // Name quality checks
-        if (!checkConsecLetters(['firstName', 'lastName', 'middleInitial'])) ok = false;
-        if (!checkNoNumbers(['firstName', 'lastName', 'middleInitial'])) ok = false;
-        if (!checkNoSpecialChars(['firstName', 'lastName', 'middleInitial', 'extension'])) ok = false;
-        if (!checkUpperFirst(['firstName', 'lastName', 'middleInitial'])) ok = false;
-        if (!checkLowerAfterFirst(['firstName', 'lastName'])) ok = false;
         if (!checkNoDoubleSpace(['firstName', 'lastName', 'middleInitial', 'extension'])) ok = false;
         if (extension.trim() && !extensionPatternChecker(extension)) ok = false;
 
@@ -170,9 +164,9 @@ const AdminUserValidation = (function () {
     function validateSecurityQuestions(isEdit) {
         let ok = true;
         const roleEl = form.querySelector(opts.roleSelector || '#role');
-        const role = roleEl ? roleEl.value : 'consumer';
+        const role = roleEl ? roleEl.value : 'basic-user';
 
-        if (role !== 'consumer') return true;
+        if (role !== 'basic-user') return true;
         if (isEdit) return true;
 
         const q1 = val('sq1') || val('secure_question');
@@ -232,7 +226,7 @@ const AdminUserValidation = (function () {
 
     function checkNoSpecialChars(fields) {
         let ok = true;
-        const pat = /[^a-zA-Z0-9 ]/;
+        const pat = /[^a-zA-Z0-9 .]/; // Allow spaces and dots
         fields.forEach(f => { const v = val(f); if (v && pat.test(v)) { showError(f, 'Must not contain special characters.'); ok = false; } });
         return ok;
     }
@@ -255,9 +249,7 @@ const AdminUserValidation = (function () {
     }
 
     function checkLowerAfterFirst(fields) {
-        let ok = true;
-        fields.forEach(f => { const v = val(f).trim(); if (v.length > 1 && /[A-Z]/.test(v.slice(1))) { showError(f, 'Must be lowercase after the first letter.'); ok = false; } });
-        return ok;
+        return true; 
     }
 
     function checkNoDoubleSpace(fields) {
@@ -395,7 +387,7 @@ const AdminUserValidation = (function () {
         const secEl = form.querySelector(opts.securitySection);
         if (!roleEl || !secEl) return;
         const role = roleEl.value;
-        if (role === 'consumer') {
+        if (role === 'basic-user') {
             secEl.style.display = '';
             // Aggressively manage required attribute
             secEl.querySelectorAll('select, input').forEach(f => {

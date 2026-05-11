@@ -6,7 +6,7 @@ $status = '';
 $search = '';
 
 $blockWhere = "r.requester_id = ?";
-$appWhere = "a.action_type = 'register_consumer'";
+$appWhere = "a.action_type = 'register_basic-user'";
 $blockParams = [$admin_id];
 $blockTypes = 's';
 $appParams = [];

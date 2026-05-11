@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (isset($_SESSION['user'])) {
-    header('Location: ' . (function_exists('getBaseUrl') ? getBaseUrl() : 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '/NAIG') . '/php/auth/dashboard.php');
+    header('Location: ' . (function_exists('getBaseUrl') ? getBaseUrl() : 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '/REDUCTO') . '/php/auth/dashboard.php');
     exit;
 }
 require_once __DIR__ . '/../includes/auth.php';
@@ -57,7 +57,7 @@ exit;
                 <button id="userNotFoundOkBtn" class="submitBtn">Okay</button>
             </div>
         </div>
-        <form class="login-form" id="loginForm" method="POST" action="http://localhost/NAIG/php/forms/login.php">
+        <form class="login-form" id="loginForm" method="POST" action="http://localhost/REDUCTO/php/forms/login.php">
             <div class="left-side">
                 <img class="form-img" src="../../images/background2.png" alt="Food Delivery">
             </div>

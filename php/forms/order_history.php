@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/auth_check.php';
-requireRole('consumer');
+requireRole('basic-user');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout_action'])) {
     session_unset();
     session_destroy();
@@ -34,7 +34,7 @@ $currentPage = 'order_history';
             <div class="order-history-toolbar">
                 <div class="order-history-search">
                     <i class="fas fa-search" aria-hidden="true"></i>
-                    <input type="text" id="orderSearch" placeholder="Search by Order ID or restaurant name..." autocomplete="off">
+                    <input type="text" id="orderSearch" placeholder="Search by Order ID or playground name..." autocomplete="off">
                 </div>
                 <div class="order-history-filters" role="group" aria-label="Filter by status">
                     <button type="button" class="filter-tab active" data-status="">All</button>
@@ -58,3 +58,4 @@ $currentPage = 'order_history';
     <script src="<?php echo $basePath; ?>js/serve_asset.php?file=order_history.js"></script>
 </body>
 </html>
+

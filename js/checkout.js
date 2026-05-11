@@ -19,8 +19,8 @@
     function groupCartByStore(cart) {
         const byStore = {};
         cart.forEach(function (item) {
-            const rid = item.restaurant_id || 0;
-            if (!byStore[rid]) byStore[rid] = { restaurant_id: rid, items: [] };
+            const rid = item.playground_id || 0;
+            if (!byStore[rid]) byStore[rid] = { playground_id: rid, items: [] };
             byStore[rid].items.push(item);
         });
         return Object.values(byStore);
@@ -33,13 +33,13 @@
         return div.innerHTML;
     }
 
-    async function loadRestaurantNames() {
+    async function loadplaygroundNames() {
         try {
-            const res = await fetch(api + '/restaurants_list.php');
+            const res = await fetch(api + '/playgrounds_list.php');
             const data = await res.json();
-            if (data.success && data.restaurants) {
+            if (data.success && data.playgrounds) {
                 const map = {};
-                data.restaurants.forEach(function (r) { map[r.id] = r.name || 'Store'; });
+                data.playgrounds.forEach(function (r) { map[r.id] = r.name || 'Store'; });
                 return map;
             }
         } catch (e) {}
@@ -59,13 +59,13 @@
         const container = document.getElementById('checkoutOrderSummary');
         if (!container) return 0;
         groups.sort(function (a, b) {
-            const na = nameMap[a.restaurant_id] || '';
-            const nb = nameMap[b.restaurant_id] || '';
+            const na = nameMap[a.playground_id] || '';
+            const nb = nameMap[b.playground_id] || '';
             return na.localeCompare(nb);
         });
         let grandTotal = 0;
         container.innerHTML = groups.map(function (group) {
-            const storeName = nameMap[group.restaurant_id] || ('Store #' + group.restaurant_id);
+            const storeName = nameMap[group.playground_id] || ('Store #' + group.playground_id);
             let storeTotal = 0;
             const rows = group.items.map(function (i) {
                 const subtotal = i.quantity * (parseFloat(i.unit_price) || 0);
@@ -79,7 +79,7 @@
             }).join('');
             grandTotal += storeTotal;
             return '<div class="cart-store-group">' +
-                '<div class="cart-store-header"><i class="fa-solid fa-store"></i> ' + escapeHtml(storeName) + '</div>' +
+                '<div class="cart-store-header"><i class="fa-solid fa-tent"></i> ' + escapeHtml(storeName) + '</div>' +
                 '<div class="cart-store-items">' + rows + '</div>' +
                 '<div class="cart-store-footer">Subtotal: <span class="cart-store-total">₱' + storeTotal.toFixed(2) + '</span></div>' +
                 '</div>';
@@ -130,13 +130,13 @@
             const group = groups[g];
             const items = group.items.map(function (i) {
                 return {
-                    menu_item_id: i.menu_item_id,
+                    package_id: i.package_id,
                     quantity: i.quantity,
                     unit_price: parseFloat(i.unit_price)
                 };
             });
             const payload = {
-                restaurant_id: group.restaurant_id,
+                playground_id: group.playground_id,
                 delivery_address: delivery_address,
                 notes: notes,
                 payment_method_id: payment_method_id,
@@ -184,7 +184,7 @@
         emptyEl.style.display = 'none';
         contentEl.style.display = 'block';
 
-        const nameMap = await loadRestaurantNames();
+        const nameMap = await loadplaygroundNames();
         const groups = groupCartByStore(cart);
         const grandTotal = renderSummary(groups, nameMap);
 
@@ -343,3 +343,6 @@
         });
     });
 })();
+
+
+

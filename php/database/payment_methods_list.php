@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/db_connect.php';
 require_once __DIR__ . '/../includes/auth.php';
 
-requireRole('consumer');
+requireRole('basic-user');
 $user_id = $_SESSION['user']['id'];
 
 $stmt = $conn->prepare("SELECT id, type, label, details, is_default FROM payment_methods WHERE user_id = ? AND type = 'gcash' ORDER BY is_default DESC, id");

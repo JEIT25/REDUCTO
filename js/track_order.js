@@ -44,14 +44,14 @@
                 if (!listEl) return;
                 const orders = (data.success && data.orders) ? data.orders : [];
                 if (orders.length === 0) {
-                    listEl.innerHTML = '<p class="muted">No recent orders. <a href="order_food.php">Order food</a> or <a href="order_history.php">view order history</a>.</p>';
+                    listEl.innerHTML = '<p class="muted">No recent orders. <a href="book_package.php">Order food</a> or <a href="order_history.php">view order history</a>.</p>';
                     return;
                 }
                 listEl.innerHTML = orders.map(o => {
                     const sc = o.status === 'delivered' ? 'status-ok' : o.status === 'cancelled' ? 'status-cancel' : 'status-pending';
                     return '<a href="track_order.php?order_id=' + encodeURIComponent(o.id) + '" class="track-recent-item">' +
                         '<span class="track-recent-id">Order #' + escapeHtml(String(o.id)) + '</span>' +
-                        '<span class="track-recent-restaurant">' + escapeHtml(o.restaurant_name || '') + '</span>' +
+                        '<span class="track-recent-playground">' + escapeHtml(o.playground_name || '') + '</span>' +
                         '<span class="status-badge ' + sc + '">' + statusLabel(o.status) + '</span>' +
                         '</a>';
                 }).join('');
@@ -95,7 +95,7 @@
         html += timelineHtml;
         html += '<div class="order-detail-card track-summary-card">';
         html += '<h2>Order #' + escapeHtml(String(order.id)) + '</h2>';
-        html += '<p><strong>' + escapeHtml(order.restaurant_name) + '</strong></p>';
+        html += '<p><strong>' + escapeHtml(order.playground_name) + '</strong></p>';
         html += '<p>Status: <span class="status-badge ' + statusClass + '">' + statusLabel(order.status) + '</span></p>';
         html += '<p>Delivery: ' + escapeHtml(order.delivery_address) + '</p>';
         html += '<p>Total: ₱' + parseFloat(order.total_amount).toFixed(2) + '</p>';
@@ -120,3 +120,5 @@
         renderTrackEntryAndRecent();
     }
 })();
+
+

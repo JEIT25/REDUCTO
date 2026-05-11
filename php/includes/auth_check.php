@@ -7,4 +7,4 @@
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/path_helper.php';
 $user = requireLogin();
-$userRole = $user['role'] ?? 'consumer';
+$userRole = $user['role'] ?? 'basic-user';

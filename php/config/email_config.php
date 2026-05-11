@@ -1,6 +1,6 @@
 <?php
 /**
- * Email Configuration for NAIGO
+ * Email Configuration for LittleLands
  * Supports both Mailjet and Gmail SMTP
  */
 
@@ -12,7 +12,7 @@ function getEmailConfig()
             'api_key' => 'f00773edb6a05fc5eb899227a4fa61f0',
             'api_secret' => '8cb1cf91893d7e85e98911674046470f',
             'sender_email' => 'carriemaejmn@gmail.com',
-            'sender_name' => 'NAIGO'
+            'sender_name' => 'LittleLands'
         ]
     ];
 }
@@ -41,28 +41,39 @@ function sendOTPEmail($to, $otp)
  */
 function sendViaMailjet($to, $otp, $config)
 {
-    $subject = 'NAIGO - Password Reset Code';
-    $messageText = "Hello,\n\nYou requested a password reset for your NAIGO account.\nYour verification code is: {$otp}\nThis code will expire in 15 minutes.\n\nBest regards,\nNAIGO Team";
+    $subject = 'LittleLands - Password Reset Code';
+    $messageText = "Hello,\n\nYou requested a password reset for your LittleLands account.\nYour verification code is: {$otp}\nThis code will expire in 15 minutes.\n\nBest regards,\nLittleLands Team";
 
     // HTML Template
     $messageHtml = "
-    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;'>
-        <div style='text-align: center; margin-bottom: 20px; background-color: #004d40; padding: 20px; border-radius: 5px 5px 0 0;'>
-            <h1 style='color: #d4af37; margin: 0; font-size: 28px;'>NAIGO</h1>
-            <p style='color: #fff; margin-top: 5px; opacity: 0.9; font-size: 14px;'>Online Restaurant Reservation</p>
-        </div>
-        <div style='background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; border: 1px solid #eee; border-top: none;'>
-            <h2 style='color: #004d40; margin-top: 0;'>Password Reset</h2>
-            <p>Hello,</p>
-            <p>You requested a password reset for your NAIGO account.</p>
-            <div style='background-color: #ffffff; border: 2px solid #d4af37; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 8px; color: #004d40; margin: 20px 0; border-radius: 5px;'>
-                {$otp}
+    <div style='font-family: \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;'>
+        <div style='background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 40px 20px; text-align: center; border-radius: 20px 20px 0 0;'>
+            <div style='display: inline-block; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 12px; margin-bottom: 15px;'>
+                <h1 style='color: #ffffff; margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;'>LittleLands</h1>
             </div>
-            <p>This code will expire in 15 minutes.</p>
-            <p style='font-size: 12px; color: #888;'>If you didn't request this, please ignore this email.</p>
+            <p style='color: #ffffff; margin: 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9;'>Playground Booking System</p>
         </div>
-        <div style='text-align: center; margin-top: 20px; font-size: 12px; color: #999;'>
-            <p>&copy; " . date('Y') . " NAIGO. All rights reserved.</p>
+        <div style='background-color: #ffffff; padding: 40px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;'>
+            <h2 style='color: #1e293b; margin-top: 0; font-size: 24px; font-weight: 700;'>Password Reset Verification</h2>
+            <p style='color: #64748b; font-size: 16px; line-height: 1.6;'>Hello,</p>
+            <p style='color: #64748b; font-size: 16px; line-height: 1.6;'>You requested a password reset for your LittleLands account. Use the verification code below to continue:</p>
+            
+            <div style='background-color: #f1f5f9; border: 2px dashed #4facfe; padding: 25px; margin: 30px 0; border-radius: 16px;'>
+                <div style='font-size: 42px; font-weight: 800; color: #4facfe; letter-spacing: 12px; margin-left: 12px;'>
+                    {$otp}
+                </div>
+            </div>
+            
+            <p style='color: #94a3b8; font-size: 14px;'>This code is valid for <b>15 minutes</b>. For security, please do not share this code with anyone.</p>
+            
+            <div style='margin-top: 40px; padding-top: 25px; border-top: 1px solid #f1f5f9;'>
+                <p style='color: #94a3b8; font-size: 12px; line-height: 1.5;'>
+                    If you didn't request this code, you can safely ignore this email. Someone may have entered your ID by mistake.
+                </p>
+            </div>
+        </div>
+        <div style='text-align: center; margin-top: 30px; padding-bottom: 20px;'>
+            <p style='color: #cbd5e1; font-size: 12px;'>&copy; " . date('Y') . " LittleLands &bull; Playground Booking System</p>
         </div>
     </div>
     ";
@@ -120,3 +131,4 @@ function sendViaMailjet($to, $otp, $config)
         return false;
     }
 }
+

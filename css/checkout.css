@@ -278,7 +278,7 @@
     transform: none;
 }
 
-/* Mobile: sticky bottom bar – hidden on desktop, shown on tablet/mobile */
+/* Mobile: sticky bottom bar – hidden on desktop, shown on Areat/mobile */
 .checkout-mobile-bar {
     display: none;
 }
@@ -384,3 +384,4 @@
     color: #fff;
 }
 .checkout-modal-btn.error:hover { background: #1f2937; }
+

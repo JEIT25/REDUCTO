@@ -86,7 +86,7 @@
                 const orders = data.orders || [];
                 const pagination = data.pagination || {};
                 if (orders.length === 0) {
-                    list.innerHTML = '<div class="empty-state"><p class="muted">No orders found.</p><p><a href="order_food.php">Order food</a> to get started.</p></div>';
+                    list.innerHTML = '<div class="empty-state"><p class="muted">No orders found.</p><p><a href="book_package.php">Order food</a> to get started.</p></div>';
                     renderPagination(null);
                     return;
                 }
@@ -102,7 +102,7 @@
                         '<span class="status-badge ' + statusClass(o.status) + '">' + formatStatus(o.status) + '</span>' +
                         '</div>' +
                         '<div class="order-card-body">' +
-                        '<p class="order-card-restaurant">' + escapeHtml(o.restaurant_name || '') + '</p>' +
+                        '<p class="order-card-playground">' + escapeHtml(o.playground_name || '') + '</p>' +
                         '<p class="order-card-items">' + preview + '</p>' +
                         '<p class="order-card-total">₱' + parseFloat(o.total_amount || 0).toFixed(2) + '</p>' +
                         '</div>' +
@@ -142,3 +142,5 @@
 
     loadOrders();
 })();
+
+

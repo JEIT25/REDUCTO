@@ -11,22 +11,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $limit = 10;
     $offset = ($page - 1) * $limit;
 
-    // Fetch Restaurants for dropdown
-    $restaurants = [];
-    $rRes = $conn->query("SELECT id, name FROM restaurants ORDER BY name");
+    // Fetch playgrounds for dropdown
+    $playgrounds = [];
+    $rRes = $conn->query("SELECT id, name FROM playgrounds ORDER BY name");
     while ($r = $rRes->fetch_assoc())
-        $restaurants[] = $r;
+        $playgrounds[] = $r;
 
     // Count
-    $countRes = $conn->query("SELECT COUNT(*) as total FROM restaurant_tables");
+    $countRes = $conn->query("SELECT COUNT(*) as total FROM play_areas");
     $total = $countRes->fetch_assoc()['total'];
     $totalPages = ceil($total / $limit);
 
-    // Fetch Tables
-    $sql = "SELECT rt.id, rt.table_number, rt.capacity, rt.location, rt.is_available, rt.restaurant_id, r.name as restaurant_name
-            FROM restaurant_tables rt
-            JOIN restaurants r ON rt.restaurant_id = r.id
-            ORDER BY r.name, rt.table_number
+    // Fetch Areas
+    $sql = "SELECT rt.id, rt.area_name, rt.capacity, rt.location_type, rt.is_available, rt.playground_id, r.name as playground_name
+            FROM play_areas rt
+            JOIN playgrounds r ON rt.playground_id = r.id
+            ORDER BY r.name, rt.area_name
             LIMIT ? OFFSET ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('ii', $limit, $offset);
@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     echo json_encode([
         'success' => true,
-        'tables' => $list,
-        'restaurants' => $restaurants,
+        'Areas' => $list,
+        'playgrounds' => $playgrounds,
         'pagination' => ['current' => $page, 'total_pages' => $totalPages, 'total_records' => $total]
     ]);
     exit;
@@ -50,32 +50,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'save') {
         $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-        $restaurant_id = (int)($_POST['restaurant_id'] ?? 0);
-        $table_number = trim($_POST['table_number'] ?? '');
+        $playground_id = (int)($_POST['playground_id'] ?? 0);
+        $area_name = trim($_POST['area_name'] ?? '');
         $capacity = (int)($_POST['capacity'] ?? 2);
-        $location = $_POST['location'] ?? 'indoor';
+        $location_type = $_POST['location_type'] ?? 'indoor';
         $is_available = isset($_POST['is_available']) ? (int)$_POST['is_available'] : 1;
 
-        if ($restaurant_id <= 0 || $table_number === '') {
-            echo json_encode(['success' => false, 'error' => 'Restaurant and Table Number required']);
+        if ($playground_id <= 0 || $area_name === '') {
+            echo json_encode(['success' => false, 'error' => 'playground and Area Number required']);
             exit;
         }
 
         if ($id > 0) {
-            $stmt = $conn->prepare("UPDATE restaurant_tables SET restaurant_id=?, table_number=?, capacity=?, location=?, is_available=? WHERE id=?");
-            $stmt->bind_param('isisii', $restaurant_id, $table_number, $capacity, $location, $is_available, $id);
+            $stmt = $conn->prepare("UPDATE play_areas SET playground_id=?, area_name=?, capacity=?, location_type=?, is_available=? WHERE id=?");
+            $stmt->bind_param('isisii', $playground_id, $area_name, $capacity, $location_type, $is_available, $id);
         }
         else {
-            // Check duplicate table number in same restaurant
-            $check = $conn->prepare("SELECT id FROM restaurant_tables WHERE restaurant_id = ? AND table_number = ?");
-            $check->bind_param('is', $restaurant_id, $table_number);
+            // Check duplicate Area number in same playground
+            $check = $conn->prepare("SELECT id FROM play_areas WHERE playground_id = ? AND area_name = ?");
+            $check->bind_param('is', $playground_id, $area_name);
             $check->execute();
             if ($check->get_result()->num_rows > 0) {
-                echo json_encode(['success' => false, 'error' => 'Table number already exists for this restaurant']);
+                echo json_encode(['success' => false, 'error' => 'Area number already exists for this playground']);
                 exit;
             }
-            $stmt = $conn->prepare("INSERT INTO restaurant_tables (restaurant_id, table_number, capacity, location, is_available) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param('isisi', $restaurant_id, $table_number, $capacity, $location, $is_available);
+            $stmt = $conn->prepare("INSERT INTO play_areas (playground_id, area_name, capacity, location_type, is_available) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param('isisi', $playground_id, $area_name, $capacity, $location_type, $is_available);
         }
 
         if ($stmt->execute()) {
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
-            $stmt = $conn->prepare("DELETE FROM restaurant_tables WHERE id = ?");
+            $stmt = $conn->prepare("DELETE FROM play_areas WHERE id = ?");
             $stmt->bind_param('i', $id);
             if ($stmt->execute())
                 echo json_encode(['success' => true]);
@@ -103,3 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $conn->close();
+
+
+
+

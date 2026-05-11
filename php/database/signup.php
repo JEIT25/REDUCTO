@@ -9,6 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $lastName = $_POST['lastName'];
     $middleInitial = $_POST['middleInitial'];
     $extension = $_POST['extension'];
+    $sex = $_POST['sex'] ?? 'male';
     $purok = $_POST['purok'];
     $barangay = $_POST['barangay'];
     $city = $_POST['city'];
@@ -75,30 +76,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // --- END DUPLICATE CHECK ---
 
-    // New users from public signup are always consumers; admin/superadmin are set manually in DB
-    $role = 'consumer';
+    // New users from public signup are always basic-users; admin/superadmin are set manually in DB
+    $role = 'basic-user';
 
     // Prepare SQL statement (includes role and all security questions)
     // New public registrations start as blocked (is_blocked = 1) until approved
     $sql = "INSERT INTO users (
-                id, firstName, lastName, middleInitial, extension,
+                id, firstName, lastName, middleInitial, extension, sex,
                 purok, barangay, city, province, zipCode, country,
                 username, email, password, birthdate, age,
                 secure_question, secure_answer, secure_question2, secure_answer2,
                 secure_question3, secure_answer3, role, is_blocked
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
         $isBlocked = 1; // pending approval
         $stmt->bind_param(
-            'sssssssssssssssssssssssi', // 24 params: 23 strings, 1 int (is_blocked)
+            'ssssssssssssssssisssssssi', // 25 params: 23 strings, 2 ints
             $id,
             $firstName,
             $lastName,
             $middleInitial,
             $extension,
+            $sex,
             $purok,
             $barangay,
             $city,
@@ -122,8 +124,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt->execute()) {
             // After creating the user, create a registration approval request
-            $reason = 'New consumer registration';
-            $approval = $conn->prepare("INSERT INTO approvals (requested_by, action_type, target_type, target_id, reason, status) VALUES (?, 'register_consumer', 'user', ?, ?, 'pending')");
+            $reason = 'New basic-user registration';
+            $approval = $conn->prepare("INSERT INTO approvals (requested_by, action_type, target_type, target_id, reason, status) VALUES (?, 'register_basic-user', 'user', ?, ?, 'pending')");
             if ($approval) {
                 $approval->bind_param('sss', $id, $id, $reason);
                 $approval->execute();

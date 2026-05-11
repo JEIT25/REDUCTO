@@ -110,7 +110,7 @@ if ($isFormSubmission) {
             // Only check registration approvals if the account is blocked.
             // This allows manual unblocking (is_blocked = 0) to always override pending/old approvals.
             if ($isBlocked) {
-                $regStmt = $conn->prepare("SELECT status FROM approvals WHERE action_type = 'register_consumer' AND target_type = 'user' AND target_id = ? ORDER BY created_at DESC LIMIT 1");
+                $regStmt = $conn->prepare("SELECT status FROM approvals WHERE action_type = 'register_basic-user' AND target_type = 'user' AND target_id = ? ORDER BY created_at DESC LIMIT 1");
                 if ($regStmt) {
                     $regStmt->bind_param('s', $user['id']);
                     $regStmt->execute();
@@ -131,7 +131,7 @@ if ($isFormSubmission) {
             }
             // Generic blocked-account handling (for any blocked user without a specific registration status)
             elseif ($isBlocked) {
-                $role = $user['role'] ?? 'consumer';
+                $role = $user['role'] ?? 'basic-user';
                 if ($role === 'admin' || $role === 'superadmin') {
                     $response['error'] = 'Account has been disabled, please contact system superadmin.';
                 } else {
@@ -142,7 +142,7 @@ if ($isFormSubmission) {
                 $storedHash = $user['password'] ?? '';
                 if ($storedHash !== '' && password_verify($password, $storedHash)) {
                     if (!array_key_exists('role', $user)) {
-                        $user['role'] = 'consumer';
+                        $user['role'] = 'basic-user';
                     }
                     $_SESSION['user'] = $user;
                     $_SESSION['failed_attempts'] = 0;
@@ -151,7 +151,7 @@ if ($isFormSubmission) {
                     // Log successful login
                     logUserAction($user['id'], 'login');
 
-                    $base = 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '/NAIG';
+                    $base = 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '/REDUCTO';
 
                     // Role-based redirection
                     if ($user['role'] === 'admin') {
@@ -196,7 +196,7 @@ else {
     }
 
     // Path to .htaccess in the /forms/ directory
-    $htaccessPath = $_SERVER['DOCUMENT_ROOT'] . '/NAIG/php/forms/.htaccess';
+    $htaccessPath = $_SERVER['DOCUMENT_ROOT'] . '/REDUCTO/php/forms/.htaccess';
 
     // Restrict access
     if ($_POST['isRegisterRestrict'] === 'true') {

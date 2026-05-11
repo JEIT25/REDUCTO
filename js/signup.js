@@ -127,7 +127,7 @@ async function checkFieldExists(fieldId, value, fieldName) {
     formData.append('value', value);
 
     try {
-        const response = await fetch('http://localhost/NAIG/php/database/check_unique.php', {
+        const response = await fetch('../database/check_unique.php', {
             method: 'POST',
             body: formData
         });
@@ -717,7 +717,7 @@ function displayPasswordStrength(form) {
 
     if (score === 4) {
         pwSpanMessage.innerText = 'Strong Password';
-        pwSpanMessage.style.color = 'rgb(5, 172, 33)';
+        pwSpanMessage.style.color = '#10b981';
     } else if (score >= 2) {
         pwSpanMessage.innerText = 'Medium Password';
         pwSpanMessage.style.color = '#ff8c00'; // Orange
@@ -761,7 +761,7 @@ registerForm.elements.repassword.addEventListener('input', (e) => {
         pwSpanMatch.style.color = "#f50606";
     } else {
         pwSpanMatch.innerText = "Passwords matched";
-        pwSpanMatch.style.color = "rgb(5, 172, 33)";
+        pwSpanMatch.style.color = '#10b981';
     }
 });
 
@@ -792,7 +792,7 @@ registerForm.addEventListener('submit', async function (e) {
         const formData = new FormData(this);
 
         try {
-            const response = await fetch('http://localhost/NAIG/php/database/signup.php', {
+            const response = await fetch('../database/signup.php', {
                 method: 'POST',
                 body: formData
             });
@@ -807,7 +807,7 @@ registerForm.addEventListener('submit', async function (e) {
 
                 // Redirect after 3 seconds
                 setTimeout(() => {
-                    window.location.href = "http://localhost/NAIG/php/auth/login.php";
+                    window.location.href = "../auth/login.php";
                 }, 3000);
             } else {
                 // ... (Error handling logic remains the same)

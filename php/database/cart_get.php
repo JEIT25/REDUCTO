@@ -4,15 +4,15 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/db_connect.php';
 require_once __DIR__ . '/../includes/auth.php';
 
-requireRole('consumer');
+requireRole('basic-user');
 
 $user_id = $_SESSION['user']['id'];
 
-$sql = "SELECT ci.id, ci.menu_item_id, ci.quantity, m.name, m.price, m.image_path, r.name as restaurant_name, r.id as restaurant_id
-        FROM cart c
-        JOIN cart_items ci ON c.id = ci.cart_id
-        JOIN menu_items m ON ci.menu_item_id = m.id
-        JOIN restaurants r ON m.restaurant_id = r.id
+$sql = "SELECT ci.id, ci.package_id, ci.quantity, m.name, m.price, m.image_path, r.name as playground_name, r.id as playground_id
+        FROM booking_cart c
+        JOIN cart_packages ci ON c.id = ci.cart_id
+        JOIN play_packages m ON ci.package_id = m.id
+        JOIN playgrounds r ON m.playground_id = r.id
         WHERE c.user_id = ?";
 
 $stmt = $conn->prepare($sql);
@@ -32,3 +32,5 @@ $conn->close();
 
 echo json_encode(['success' => true, 'items' => $items, 'total' => $total]);
 ?>
+
+

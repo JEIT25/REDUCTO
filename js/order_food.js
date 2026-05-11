@@ -1,27 +1,27 @@
 /**
- * Order Food page: load restaurants, load menu, add to cart (persisted to DB), checkout.
+ * Order Food page: load playgrounds, load Packages, add to cart (persisted to DB), checkout.
  * Uses BASE_URL and relative paths for API calls.
  */
 (function () {
     const base = window.BASE_URL || '';
     const api = base + '/php/database';
 
-    let restaurants = [];
-    let menu = [];
-    let currentRestaurantId = null;
-    let currentRestaurantName = '';
+    let playgrounds = [];
+    let Packages = [];
+    let currentplaygroundId = null;
+    let currentplaygroundName = '';
     let paymentMethods = [];
 
     const $ = (id) => document.getElementById(id);
-    const restaurantsView = $('restaurantsView');
-    const menuView = $('menuView');
+    const playgroundsView = $('playgroundsView');
+    const PackagesView = $('PackagesView');
     const checkoutView = $('checkoutView');
     const checkoutTotal = $('checkoutTotal');
     const paymentMethodsList = $('paymentMethodsList');
 
     function showView(name) {
-        restaurantsView.style.display = name === 'restaurants' ? 'block' : 'none';
-        menuView.style.display = name === 'menu' ? 'block' : 'none';
+        playgroundsView.style.display = name === 'playgrounds' ? 'block' : 'none';
+        PackagesView.style.display = name === 'Packages' ? 'block' : 'none';
         checkoutView.style.display = name === 'checkout' ? 'block' : 'none';
     }
 
@@ -66,7 +66,7 @@
     async function addToCart(item, qty) {
         const num = parseInt(qty, 10) || 1;
         const fd = new FormData();
-        fd.append('menu_item_id', item.id);
+        fd.append('package_id', item.id);
         fd.append('quantity', num);
 
         try {
@@ -83,78 +83,78 @@
         }
     }
 
-    async function loadRestaurants() {
+    async function loadplaygrounds() {
         try {
-            const res = await fetch(api + '/restaurants_list.php');
+            const res = await fetch(api + '/playgrounds_list.php');
             const data = await res.json();
-            if (data.success && data.restaurants) {
-                restaurants = data.restaurants;
-                const list = $('restaurantsList');
-                if (data.restaurants.length === 0) {
+            if (data.success && data.playgrounds) {
+                playgrounds = data.playgrounds;
+                const list = $('playgroundsList');
+                if (data.playgrounds.length === 0) {
                     list.innerHTML = `<div class="empty-state" style="padding: 2rem; text-align: center; border: 2px dashed var(--border-light, #e5e7eb); border-radius: 12px;">
-                        <i class="fa-solid fa-store" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
-                        <p style="color: var(--text-muted); margin: 0;">No restaurants available at the moment.</p>
+                        <i class="fa-solid fa-tent" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                        <p style="color: var(--text-muted); margin: 0;">No playgrounds available at the moment.</p>
                     </div>`;
                     return;
                 }
-                list.innerHTML = data.restaurants.map(r => {
-                    return `<div class="restaurant-card" data-id="${r.id}" data-name="${escapeHtml(r.name)}">
+                list.innerHTML = data.playgrounds.map(r => {
+                    return `<div class="playground-card" data-id="${r.id}" data-name="${escapeHtml(r.name)}">
                         <h3>${escapeHtml(r.name)}</h3>
                         <p>${escapeHtml(r.description || r.address || '')}</p>
                     </div>`;
                 }).join('');
-                list.querySelectorAll('.restaurant-card').forEach(el => {
+                list.querySelectorAll('.playground-card').forEach(el => {
                     el.addEventListener('click', () => {
-                        currentRestaurantId = parseInt(el.dataset.id, 10);
-                        currentRestaurantName = el.dataset.name;
-                        loadMenu(currentRestaurantId);
-                        showView('menu');
+                        currentplaygroundId = parseInt(el.dataset.id, 10);
+                        currentplaygroundName = el.dataset.name;
+                        loadPackages(currentplaygroundId);
+                        showView('Packages');
                     });
                 });
             }
         } catch (e) {
-            console.error('Failed to load restaurants:', e);
+            console.error('Failed to load playgrounds:', e);
         }
     }
 
-    async function loadMenu(restaurantId) {
+    async function loadPackages(playgroundId) {
         try {
-            const res = await fetch(api + '/menu_list.php?restaurant_id=' + restaurantId);
+            const res = await fetch(api + '/play_packages_list.php?playground_id=' + playgroundId);
             const data = await res.json();
-            if (data.success && data.menu) {
-                menu = data.menu;
-                $('menuRestaurantName').textContent = currentRestaurantName;
-                const list = $('menuList');
+            if (data.success && data.Packages) {
+                Packages = data.Packages;
+                $('PackagesplaygroundName').textContent = currentplaygroundName;
+                const list = $('PackagesList');
 
-                const availableItems = data.menu.filter(m => m.is_available == 1);
+                const availableItems = data.Packages.filter(m => m.is_available == 1);
                 if (availableItems.length === 0) {
                     list.innerHTML = `<div class="empty-state" style="padding: 2rem; text-align: center; border: 2px dashed var(--border-light, #e5e7eb); border-radius: 12px;">
-                        <i class="fa-solid fa-utensils" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
-                        <p style="color: var(--text-muted); margin: 0;">No menu items available from this restaurant.</p>
+                        <i class="fa-solid fa-shapes" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                        <p style="color: var(--text-muted); margin: 0;">No Play Packages available from this playground.</p>
                     </div>`;
                     return;
                 }
 
-                list.innerHTML = data.menu.map(m => {
+                list.innerHTML = data.Packages.map(m => {
                     const avail = m.is_available == 1;
-                    return `<div class="menu-item ${!avail ? 'unavailable' : ''}" data-id="${m.id}">
+                    return `<div class="Packages-item ${!avail ? 'unavailable' : ''}" data-id="${m.id}">
                         <h4>${escapeHtml(m.name)}</h4>
                         ${m.description ? `<p class="muted small">${escapeHtml(m.description)}</p>` : ''}
                         <span class="price">₱${parseFloat(m.price).toFixed(2)}</span>
-                        ${avail ? `<div class="menu-item-actions">
+                        ${avail ? `<div class="Packages-item-actions">
                             <input type="number" min="1" value="1">
-                            <button type="button" class="btn-add" data-menu-id="${m.id}">Add</button>
-                            <button type="button" class="btn-fav" data-menu-id="${m.id}" title="Favorite">♥</button>
-                        </div>` : `<div class="menu-item-actions"><span class="muted small">Unavailable</span></div>`}
+                            <button type="button" class="btn-add" data-Packages-id="${m.id}">Add</button>
+                            <button type="button" class="btn-fav" data-Packages-id="${m.id}" title="Favorite">♥</button>
+                        </div>` : `<div class="Packages-item-actions"><span class="muted small">Unavailable</span></div>`}
                     </div>`;
                 }).join('');
 
                 list.querySelectorAll('.btn-add').forEach(btn => {
                     btn.addEventListener('click', () => {
-                        const mid = parseInt(btn.dataset.menuId, 10);
-                        const item = menu.find(m => m.id == mid);
+                        const mid = parseInt(btn.dataset.PackagesId, 10);
+                        const item = Packages.find(m => m.id == mid);
                         if (!item) return;
-                        const input = btn.closest('.menu-item').querySelector('input[type="number"]');
+                        const input = btn.closest('.Packages-item').querySelector('input[type="number"]');
                         // Disable button temporarily to prevent double clicks
                         btn.disabled = true;
                         btn.textContent = '...';
@@ -170,7 +170,7 @@
                 list.querySelectorAll('.btn-fav').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.preventDefault();
-                        toggleFavorite(btn.dataset.menuId, btn);
+                        toggleFavorite(btn.dataset.PackagesId, btn);
                     });
                 });
 
@@ -180,23 +180,23 @@
                         const r = await fetch(api + '/favorites_list.php');
                         const d = await r.json();
                         if (d.favorites) {
-                            const ids = d.favorites.map(f => String(f.menu_item_id));
+                            const ids = d.favorites.map(f => String(f.package_id));
                             list.querySelectorAll('.btn-fav').forEach(b => {
-                                b.classList.toggle('favorited', ids.includes(b.dataset.menuId));
+                                b.classList.toggle('favorited', ids.includes(b.dataset.PackagesId));
                             });
                         }
                     } catch (_) { }
                 })();
             }
         } catch (e) {
-            console.error('Failed to load menu:', e);
+            console.error('Failed to load Packages:', e);
         }
     }
 
-    async function toggleFavorite(menuItemId, btn) {
+    async function toggleFavorite(PackagesItemId, btn) {
         try {
             const fd = new FormData();
-            fd.append('menu_item_id', menuItemId);
+            fd.append('package_id', PackagesItemId);
             fd.append('action', 'toggle');
             const res = await fetch(api + '/favorite_toggle.php', { method: 'POST', body: fd });
             const data = await res.json();
@@ -229,7 +229,7 @@
             const data = await res.json();
             if (!data.success || data.items.length === 0) {
                 showToast('Your cart is empty. Add items first.', 'error');
-                showView('restaurants');
+                showView('playgrounds');
                 return;
             }
             if (checkoutTotal) checkoutTotal.textContent = data.total.toFixed(2);
@@ -239,8 +239,8 @@
         }
     }
 
-    $('backToRestaurants').addEventListener('click', () => { showView('restaurants'); });
-    $('backToMenu').addEventListener('click', () => { showView('menu'); });
+    $('backToplaygrounds').addEventListener('click', () => { showView('playgrounds'); });
+    $('backToPackages').addEventListener('click', () => { showView('Packages'); });
     $('checkoutForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const delivery_address = $('delivery_address').value.trim();
@@ -259,18 +259,18 @@
                 return;
             }
             cartItems = cartData.items.map(ci => ({
-                menu_item_id: ci.menu_item_id,
+                package_id: ci.package_id,
                 quantity: ci.quantity,
                 unit_price: parseFloat(ci.price)
             }));
-            rid = cartData.items[0].restaurant_id;
+            rid = cartData.items[0].playground_id;
         } catch (_) {
             showToast('Failed to read cart. Try again.', 'error');
             return;
         }
 
         const payload = {
-            restaurant_id: rid,
+            playground_id: rid,
             delivery_address,
             notes,
             payment_method_id: pmId ? parseInt(pmId, 10) : null,
@@ -288,7 +288,7 @@
             });
             const data = await res.json();
             if (data.success) {
-                showView('restaurants');
+                showView('playgrounds');
                 showToast('Order #' + data.order_id + ' placed successfully!', 'success');
                 submitBtn.textContent = 'Place Order';
                 submitBtn.disabled = false;
@@ -309,7 +309,11 @@
         return div.innerHTML;
     }
 
-    loadRestaurants();
+    loadplaygrounds();
     loadPaymentMethods();
-    showView('restaurants');
+    showView('playgrounds');
 })();
+
+
+
+

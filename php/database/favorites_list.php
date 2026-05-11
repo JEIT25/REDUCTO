@@ -4,14 +4,14 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/db_connect.php';
 require_once __DIR__ . '/../includes/auth.php';
 
-requireRole('consumer');
+requireRole('basic-user');
 $user_id = $_SESSION['user']['id'];
 
 $stmt = $conn->prepare("
-    SELECT f.id, f.menu_item_id, m.name, m.description, m.price, m.restaurant_id, m.is_available, r.name AS restaurant_name
+    SELECT f.id, f.package_id, m.name, m.description, m.price, m.playground_id, m.is_available, r.name AS playground_name
     FROM user_favorites f
-    JOIN menu_items m ON m.id = f.menu_item_id
-    JOIN restaurants r ON r.id = m.restaurant_id
+    JOIN play_packages m ON m.id = f.package_id
+    JOIN playgrounds r ON r.id = m.playground_id
     WHERE f.user_id = ?
 ");
 $stmt->bind_param('s', $user_id);
@@ -25,3 +25,5 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 $conn->close();
 echo json_encode(['success' => true, 'favorites' => $list]);
+
+

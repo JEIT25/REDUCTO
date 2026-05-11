@@ -18,7 +18,7 @@ if (!function_exists('getBasePath')) {
     function getBasePath($currentFile)
     {
         $currentDir = dirname($currentFile);
-        // Project root: from php/includes/ go up 2 levels = NAIG root
+        // Project root: from php/includes/ go up 2 levels = REDUCTO root
         $projectRoot = realpath(dirname(__DIR__, 2));
         $currentDirReal = realpath($currentDir);
 
@@ -33,3 +33,4 @@ if (!function_exists('getBasePath')) {
         return str_repeat('../', $depth);
     }
 }
+

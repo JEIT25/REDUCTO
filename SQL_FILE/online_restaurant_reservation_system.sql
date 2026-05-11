@@ -69,7 +69,7 @@ CREATE TABLE `approvals` (
 --
 
 INSERT INTO `approvals` (`id`, `requested_by`, `action_type`, `target_type`, `target_id`, `reason`, `status`, `reviewed_by`, `review_notes`, `created_at`, `updated_at`) VALUES
-(4, '1234-5678', 'register_consumer', 'user', '1234-5678', 'New consumer registration', 'approved', '0001-0004', '', '2026-05-08 00:55:14', '2026-05-08 00:58:57');
+(4, '1234-5678', 'register_basic-user', 'user', '1234-5678', 'New basic-user registration', 'approved', '0001-0004', '', '2026-05-08 00:55:14', '2026-05-08 00:58:57');
 
 -- --------------------------------------------------------
 
@@ -486,7 +486,7 @@ CREATE TABLE `users` (
   `secure_question3` varchar(100) DEFAULT NULL,
   `secure_answer3` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `role` enum('consumer','admin','superadmin') NOT NULL DEFAULT 'consumer',
+  `role` enum('basic-user','admin','superadmin') NOT NULL DEFAULT 'basic-user',
   `is_blocked` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -496,7 +496,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `firstName`, `lastName`, `middleInitial`, `extension`, `sex`, `birthdate`, `age`, `purok`, `barangay`, `city`, `province`, `zipCode`, `country`, `username`, `email`, `password`, `secure_question`, `secure_answer`, `secure_question2`, `secure_answer2`, `secure_question3`, `secure_answer3`, `created_at`, `role`, `is_blocked`) VALUES
 ('0001-0002', 'Clark', 'Naig', 'N', '', 'male', '1990-06-20', 35, 'Purok 2', 'Barangay 2', 'Cabadbaran City', 'Agusan Del Norte', '8605', 'Philippines', 'clark21', 'clark@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1. Who is your bestfriend in elementary? *', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2. What is the name of your pet? *', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '3. Who is your favorite teacher in highschool? *', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-02-25 16:17:36', 'superadmin', 0),
-('0001-0004', 'Psynil', 'Naig', '', '', 'male', '2001-07-22', 24, 'Purok 4', 'Barangay 4', 'Cabadbaran City', 'Agusan Del Norte', '8605', 'Philippines', 'pysnil21', 'psynill@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1. Who is your bestfriend in elementary? *', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2. What is the name of your pet? *', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '3. Who is your favorite teacher in highschool? *', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-02-25 16:17:36', 'consumer', 0),
+('0001-0004', 'Psynil', 'Naig', '', '', 'male', '2001-07-22', 24, 'Purok 4', 'Barangay 4', 'Cabadbaran City', 'Agusan Del Norte', '8605', 'Philippines', 'pysnil21', 'psynill@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1. Who is your bestfriend in elementary? *', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2. What is the name of your pet? *', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '3. Who is your favorite teacher in highschool? *', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-02-25 16:17:36', 'basic-user', 0),
 ('1234-5678', 'Jaira', 'Naig', '', '', 'female', '2003-02-02', 23, 'Purok 5', 'Baranggay 6', 'City of Cabadbaran', 'Agusan Del Norte', '8605', 'Philippines', 'jaira21', 'jaira21@gmail.com', '$2y$10$mE8gl.6Biun3IeIIfLeoNO1Wb/4J0NzWNFqAysIocpwn04Ry/y6vO', 'What is the name of your pet?', '$2y$10$RkDJNPtwonm77rLUc9lBPOURIhrzDwOLmB/L1eM7UfMfoO.vicAsC', 'What is your favorite food?', '$2y$10$0W.RvWsXTUKHy9j/gp.7ue.ZcOan6FRrr/d5KkOnEy7pF4.7Bh0om', 'What is your favorite movie?', '$2y$10$/ziyyFQ5m5DTR3zK6u2mQuUD3LBeGtlrCiuz1tf2XHibpod1yFpiO', '2026-05-08 00:55:14', 'admin', 0);
 
 -- --------------------------------------------------------

@@ -8,7 +8,7 @@ requireRole('superadmin');
 
 $user_id = trim($_POST['user_id'] ?? '');
 $role = trim($_POST['role'] ?? '');
-$allowed = ['consumer', 'admin', 'superadmin'];
+$allowed = ['basic-user', 'admin', 'superadmin'];
 if ($user_id === '' || !in_array($role, $allowed, true)) {
     echo json_encode(['success' => false, 'error' => 'Invalid request']);
     exit;

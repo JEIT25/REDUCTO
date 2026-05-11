@@ -5,9 +5,9 @@ $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 // Define valid bases: current host and relative path
 $currentHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $validBases = [
-    "http://$currentHost/NAIG/",
-    "https://$currentHost/NAIG/",
-    "/NAIG/"
+    "http://$currentHost/REDUCTO/",
+    "https://$currentHost/REDUCTO/",
+    "/REDUCTO/"
 ];
 
 // Check if the referer matches any of the valid referers
@@ -54,3 +54,4 @@ else {
     http_response_code(400);
     echo "No file specified.";
 }
+

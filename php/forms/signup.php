@@ -7,9 +7,9 @@ $basePath = getBasePath(__FILE__);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account - NAIGO</title>
+    <title>Create Account - LittleLands</title>
     <link rel="stylesheet" href="<?php echo $basePath; ?>css/serve_asset.php?file=design-system.css">
-    <link rel="stylesheet" href="<?php echo $basePath; ?>css/serve_asset.php?file=signup.css">
+    <link rel="stylesheet" href="<?php echo $basePath; ?>css/serve_asset.php?file=signup.css&v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -17,8 +17,8 @@ $basePath = getBasePath(__FILE__);
     <!-- ===== Navbar (Fixed) ===== -->
     <nav class="signup-navbar">
         <a href="../forms/homepage.php" class="brand">
-            <div class="navbar-logo-icon" aria-hidden="true" style="font-size: 1.25rem;"><i class="fa-solid fa-concierge-bell"></i></div>
-            <span>NAIGO<span class="sub-text">Online Restaurant Reservation</span></span>
+            <div class="navbar-logo-icon" aria-hidden="true" style="font-size: 1.25rem;"><i class="fa-solid fa-shapes"></i></div>
+            <span>LittleLands<span class="sub-text">Playground Booking System</span></span>
         </a>
         <div class="nav-buttons">
             <a href="../forms/homepage.php" class="nav-btn nav-btn-outline">Home</a>
@@ -32,7 +32,7 @@ $basePath = getBasePath(__FILE__);
             <div class="signup-content">
                 <div class="signup-header">
                     <h2 class="signup-title">Create Account</h2>
-                    <p class="signup-subtitle">Join NAIGO and discover exceptional dining</p>
+                    <p class="signup-subtitle">Join LittleLands and start your playground adventure</p>
                 </div>
 
                 <!-- Horizontal Step Indicators -->
@@ -58,7 +58,7 @@ $basePath = getBasePath(__FILE__);
                     <!-- Success / Waiting for Approval Modal -->
                     <div id="successModal" class="modal-simple-alert">
                         <div class="modal-simple-alert-content">
-                            <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#059669" width="4em" height="4em">
+                            <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="var(--success-color, #10b981)" width="4em" height="4em">
                                 <path d="M256 512C397.4 512 512 397.4 512 256C512 114.6 397.4 0 256 0C114.6 0 0 114.6 0 256C0 397.4 114.6 512 256 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/>
                             </svg>
                             <span class="modal-simple-alert-text">Registration submitted for approval.</span>
@@ -73,12 +73,12 @@ $basePath = getBasePath(__FILE__);
                     <!-- Step 1: Personal Info -->
                     <div class="form-step active">
                         <h2 id="formTitle">Personal Information</h2>
-                        <p class="form-subtitle">Tell us about yourself to create your dining profile</p>
+                        <p class="form-subtitle">Tell us about yourself to create your account profile</p>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="id">Member ID <span class="required">*</span></label>
                                 <div class="input-with-icon">
-                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <i class="fa-solid fa-id-card input-icon"></i>
                                     <input type="text" id="id" name="id" placeholder="xxxx-xxxx">
                                 </div>
                                 <span class="validation-message" id="idError"></span>
@@ -308,3 +308,4 @@ $basePath = getBasePath(__FILE__);
     <script src="../../js/serve_asset.php?file=signup.js"></script>
 </body>
 </html>
+

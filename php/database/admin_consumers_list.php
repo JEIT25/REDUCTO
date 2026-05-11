@@ -12,7 +12,7 @@ $offset = ($page - 1) * $limit;
 $search = trim($_GET['search'] ?? '');
 $status = trim($_GET['status'] ?? '');
 
-$whereClause = "role = 'consumer'";
+$whereClause = "role = 'basic-user'";
 $params = [];
 $types = '';
 

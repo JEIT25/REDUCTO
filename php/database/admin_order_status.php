@@ -14,9 +14,10 @@ if ($order_id <= 0 || !in_array($status, $allowed, true)) {
     exit;
 }
 
-$stmt = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
+$stmt = $conn->prepare("UPDATE package_orders SET status = ? WHERE id = ?");
 $stmt->bind_param('si', $status, $order_id);
 $stmt->execute();
 $stmt->close();
 $conn->close();
 echo json_encode(['success' => true]);
+

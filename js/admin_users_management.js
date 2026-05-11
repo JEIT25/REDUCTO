@@ -42,8 +42,8 @@
                 let html = '';
                 users.forEach(u => {
                     const name = escapeHtml((u.firstName || '') + ' ' + (u.lastName || ''));
-                    const roleClass = (u.role || 'consumer').toLowerCase().replace(' ', '-');
-                    const canRequestDelete = (u.role === 'consumer' || u.role === 'admin') && u.id;
+                    const roleClass = (u.role || 'basic-user').toLowerCase().replace(' ', '-');
+                    const canRequestDelete = (u.role === 'basic-user' || u.role === 'admin') && u.id;
                     html += '<div class="user-card" data-id="' + escapeHtml(u.id) + '">' +
                         '<div class="user-card-name">' + name + '</div>' +
                         '<span class="user-card-role ' + roleClass + '">' + escapeHtml(u.role || '') + '</span>' +

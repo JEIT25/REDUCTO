@@ -18,8 +18,8 @@
     function groupCartByStore(cart) {
         const byStore = {};
         cart.forEach(function (item) {
-            const rid = item.restaurant_id || 0;
-            if (!byStore[rid]) byStore[rid] = { restaurant_id: rid, items: [] };
+            const rid = item.playground_id || 0;
+            if (!byStore[rid]) byStore[rid] = { playground_id: rid, items: [] };
             byStore[rid].items.push(item);
         });
         return Object.values(byStore);
@@ -32,13 +32,13 @@
         return div.innerHTML;
     }
 
-    async function loadRestaurantNames() {
+    async function loadplaygroundNames() {
         try {
-            const res = await fetch(api + '/restaurants_list.php');
+            const res = await fetch(api + '/playgrounds_list.php');
             const data = await res.json();
-            if (data.success && data.restaurants) {
+            if (data.success && data.playgrounds) {
                 const map = {};
-                data.restaurants.forEach(function (r) { map[r.id] = r.name || 'Store'; });
+                data.playgrounds.forEach(function (r) { map[r.id] = r.name || 'Store'; });
                 return map;
             }
         } catch (e) {}
@@ -52,12 +52,12 @@
         } catch (e) {}
     }
 
-    function removeItemFromCart(cart, menuItemId, restaurantId) {
-        const mid = parseInt(menuItemId, 10);
-        const rid = restaurantId !== undefined && restaurantId !== '' ? parseInt(restaurantId, 10) : null;
+    function removeItemFromCart(cart, PackagesItemId, playgroundId) {
+        const mid = parseInt(PackagesItemId, 10);
+        const rid = playgroundId !== undefined && playgroundId !== '' ? parseInt(playgroundId, 10) : null;
         const next = cart.filter(function (c) {
-            const cMid = parseInt(c.menu_item_id, 10);
-            const cRid = c.restaurant_id !== undefined && c.restaurant_id !== null ? parseInt(c.restaurant_id, 10) : null;
+            const cMid = parseInt(c.package_id, 10);
+            const cRid = c.playground_id !== undefined && c.playground_id !== null ? parseInt(c.playground_id, 10) : null;
             if (cMid !== mid) return true;
             if (rid === null) return false;
             return cRid !== rid;
@@ -65,15 +65,15 @@
         return next;
     }
 
-    function setQuantity(cart, menuItemId, restaurantId, newQty) {
-        const mid = parseInt(menuItemId, 10);
-        const rid = restaurantId !== undefined && restaurantId !== '' ? parseInt(restaurantId, 10) : null;
+    function setQuantity(cart, PackagesItemId, playgroundId, newQty) {
+        const mid = parseInt(PackagesItemId, 10);
+        const rid = playgroundId !== undefined && playgroundId !== '' ? parseInt(playgroundId, 10) : null;
         const qty = Math.max(0, parseInt(newQty, 10) || 0);
-        if (qty <= 0) return removeItemFromCart(cart, menuItemId, restaurantId);
+        if (qty <= 0) return removeItemFromCart(cart, PackagesItemId, playgroundId);
         const next = cart.slice();
         const item = next.find(function (c) {
-            const cMid = parseInt(c.menu_item_id, 10);
-            const cRid = c.restaurant_id !== undefined && c.restaurant_id !== null ? parseInt(c.restaurant_id, 10) : null;
+            const cMid = parseInt(c.package_id, 10);
+            const cRid = c.playground_id !== undefined && c.playground_id !== null ? parseInt(c.playground_id, 10) : null;
             if (cMid !== mid) return false;
             return rid === null ? true : cRid === rid;
         });
@@ -81,19 +81,19 @@
         return next;
     }
 
-    function updateQty(cart, menuItemId, restaurantId, delta) {
-        const mid = parseInt(menuItemId, 10);
-        const rid = restaurantId !== undefined && restaurantId !== '' ? parseInt(restaurantId, 10) : null;
+    function updateQty(cart, PackagesItemId, playgroundId, delta) {
+        const mid = parseInt(PackagesItemId, 10);
+        const rid = playgroundId !== undefined && playgroundId !== '' ? parseInt(playgroundId, 10) : null;
         const item = cart.find(function (c) {
-            const cMid = parseInt(c.menu_item_id, 10);
-            const cRid = c.restaurant_id !== undefined && c.restaurant_id !== null ? parseInt(c.restaurant_id, 10) : null;
+            const cMid = parseInt(c.package_id, 10);
+            const cRid = c.playground_id !== undefined && c.playground_id !== null ? parseInt(c.playground_id, 10) : null;
             if (cMid !== mid) return false;
             return rid === null ? true : cRid === rid;
         });
         if (!item) return cart;
         const newQty = Math.max(0, (item.quantity || 1) + delta);
-        if (newQty <= 0) return removeItemFromCart(cart, menuItemId, restaurantId);
-        return setQuantity(cart, menuItemId, restaurantId, newQty);
+        if (newQty <= 0) return removeItemFromCart(cart, PackagesItemId, playgroundId);
+        return setQuantity(cart, PackagesItemId, playgroundId, newQty);
     }
 
     function render() {
@@ -113,22 +113,22 @@
         contentEl.style.display = 'block';
         if (checkoutBtn) checkoutBtn.style.display = 'inline-block';
 
-        loadRestaurantNames().then(function (nameMap) {
+        loadplaygroundNames().then(function (nameMap) {
             const groups = groupCartByStore(cart);
             groups.sort(function (a, b) {
-                const na = nameMap[a.restaurant_id] || '';
-                const nb = nameMap[b.restaurant_id] || '';
+                const na = nameMap[a.playground_id] || '';
+                const nb = nameMap[b.playground_id] || '';
                 return na.localeCompare(nb);
             });
             const container = document.getElementById('cartByStore');
             if (!container) return;
             container.innerHTML = groups.map(function (group) {
-                const storeName = nameMap[group.restaurant_id] || ('Store #' + group.restaurant_id);
+                const storeName = nameMap[group.playground_id] || ('Store #' + group.playground_id);
                 let storeTotal = 0;
                 const rows = group.items.map(function (i) {
                     const subtotal = i.quantity * (parseFloat(i.unit_price) || 0);
                     storeTotal += subtotal;
-                    return '<div class="cart-item-row" data-menu-id="' + i.menu_item_id + '" data-restaurant-id="' + (i.restaurant_id || group.restaurant_id) + '">' +
+                    return '<div class="cart-item-row" data-Packages-id="' + i.package_id + '" data-playground-id="' + (i.playground_id || group.playground_id) + '">' +
                         '<span class="cart-item-name">' + escapeHtml(i.name) + '</span>' +
                         '<div class="cart-qty-controls">' +
                         '<button type="button" class="cart-qty-btn cart-qty-minus" aria-label="Decrease">−</button>' +
@@ -140,8 +140,8 @@
                         '<button type="button" class="cart-item-remove" title="Remove" aria-label="Remove"><i class="fa-solid fa-trash-can"></i></button>' +
                         '</div>';
                 }).join('');
-                return '<div class="cart-store-group" data-restaurant-id="' + group.restaurant_id + '">' +
-                    '<div class="cart-store-header"><i class="fa-solid fa-store"></i> ' + escapeHtml(storeName) + '</div>' +
+                return '<div class="cart-store-group" data-playground-id="' + group.playground_id + '">' +
+                    '<div class="cart-store-header"><i class="fa-solid fa-tent"></i> ' + escapeHtml(storeName) + '</div>' +
                     '<div class="cart-store-items">' + rows + '</div>' +
                     '<div class="cart-store-footer">Subtotal: <span class="cart-store-total">₱' + storeTotal.toFixed(2) + '</span></div>' +
                     '</div>';
@@ -152,11 +152,11 @@
                     e.preventDefault();
                     const row = btn.closest('.cart-item-row');
                     if (!row) return;
-                    const menuId = row.getAttribute('data-menu-id');
-                    const restId = row.getAttribute('data-restaurant-id');
-                    if (menuId === null || menuId === '') return;
+                    const PackagesId = row.getAttribute('data-Packages-id');
+                    const restId = row.getAttribute('data-playground-id');
+                    if (PackagesId === null || PackagesId === '') return;
                     let next = getCart();
-                    next = removeItemFromCart(next, menuId, restId);
+                    next = removeItemFromCart(next, PackagesId, restId);
                     saveCart(next);
                     render();
                 });
@@ -167,11 +167,11 @@
                     e.preventDefault();
                     const row = btn.closest('.cart-item-row');
                     if (!row) return;
-                    const menuId = row.getAttribute('data-menu-id');
-                    const restId = row.getAttribute('data-restaurant-id');
-                    if (menuId === null || menuId === '') return;
+                    const PackagesId = row.getAttribute('data-Packages-id');
+                    const restId = row.getAttribute('data-playground-id');
+                    if (PackagesId === null || PackagesId === '') return;
                     let next = getCart();
-                    next = updateQty(next, menuId, restId, -1);
+                    next = updateQty(next, PackagesId, restId, -1);
                     saveCart(next);
                     render();
                 });
@@ -182,11 +182,11 @@
                     e.preventDefault();
                     const row = btn.closest('.cart-item-row');
                     if (!row) return;
-                    const menuId = row.getAttribute('data-menu-id');
-                    const restId = row.getAttribute('data-restaurant-id');
-                    if (menuId === null || menuId === '') return;
+                    const PackagesId = row.getAttribute('data-Packages-id');
+                    const restId = row.getAttribute('data-playground-id');
+                    if (PackagesId === null || PackagesId === '') return;
                     let next = getCart();
-                    next = updateQty(next, menuId, restId, 1);
+                    next = updateQty(next, PackagesId, restId, 1);
                     saveCart(next);
                     render();
                 });
@@ -196,15 +196,15 @@
                 function applyQty() {
                     const row = input.closest('.cart-item-row');
                     if (!row) return;
-                    const menuId = row.getAttribute('data-menu-id');
-                    const restId = row.getAttribute('data-restaurant-id');
-                    if (menuId === null || menuId === '') return;
+                    const PackagesId = row.getAttribute('data-Packages-id');
+                    const restId = row.getAttribute('data-playground-id');
+                    if (PackagesId === null || PackagesId === '') return;
                     let val = parseInt(input.value, 10);
                     if (isNaN(val) || val < 1) val = 1;
                     if (val > 99) val = 99;
                     input.value = val;
                     let next = getCart();
-                    next = setQuantity(next, menuId, restId, val);
+                    next = setQuantity(next, PackagesId, restId, val);
                     saveCart(next);
                     render();
                 }
@@ -216,3 +216,6 @@
 
     document.addEventListener('DOMContentLoaded', render);
 })();
+
+
+

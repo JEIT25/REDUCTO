@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function actionLabel(actionType) {
         if (actionType === 'delete_user') return 'Delete user';
-        if (actionType === 'delete_restaurant') return 'Delete restaurant';
-        if (actionType === 'delete_menu_item') return 'Delete menu item';
-        if (actionType === 'register_consumer') return 'New consumer registration';
+        if (actionType === 'delete_playground') return 'Delete playground';
+        if (actionType === 'delete_play_package') return 'Delete Play Package';
+        if (actionType === 'register_basic-user') return 'New basic-user registration';
         return actionType || 'Request';
     }
 
@@ -259,8 +259,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function actionLabel(actionType) {
         if (actionType === 'delete_user') return 'Delete user';
-        if (actionType === 'delete_restaurant') return 'Delete restaurant';
-        if (actionType === 'delete_menu_item') return 'Delete menu item';
+        if (actionType === 'delete_playground') return 'Delete playground';
+        if (actionType === 'delete_play_package') return 'Delete Play Package';
         return actionType || 'Request';
     }
 
@@ -326,3 +326,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     loadApprovals(1, currentStatus);
 });
+
+

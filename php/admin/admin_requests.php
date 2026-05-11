@@ -13,7 +13,7 @@ requireRole('admin');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Requests - NAIGO</title>
+    <title>Requests - LittleLands</title>
     <link rel="stylesheet" href="../../css/design-system.css">
     <link rel="stylesheet" href="../../css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -147,6 +147,14 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                         <option value="rejected">Rejected</option>
                     </select>
                 </div>
+                <div class="form-group" style="max-width: 180px;">
+                    <label><i class="fa-solid fa-calendar-day"></i> From</label>
+                    <input type="date" id="startDate" onchange="applyFilters()">
+                </div>
+                <div class="form-group" style="max-width: 180px;">
+                    <label><i class="fa-solid fa-calendar-day"></i> To</label>
+                    <input type="date" id="endDate" onchange="applyFilters()">
+                </div>
                 <button class="btn-reset" onclick="resetFilters()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
             </div>
 
@@ -162,8 +170,8 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                 <div id="paginationControls" style="display: flex; align-items: center; justify-content: flex-end;"></div>
             </div>
         </main>
-        <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
     </div>
+    <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
 
     <script src="../../js/pagination_util.js?v=<?php echo time(); ?>"></script>
     <script>
@@ -171,6 +179,8 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
         let currentPage = 1;
         let currentSearch = '';
         let currentStatus = '';
+        let currentStartDate = '';
+        let currentEndDate = '';
         let limit = 10;
 
         function changeLimit(newLimit) {
@@ -184,7 +194,9 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                 page: currentPage,
                 limit: limit,
                 search: currentSearch,
-                status: currentStatus
+                status: currentStatus,
+                startDate: currentStartDate,
+                endDate: currentEndDate
             });
 
             fetch(api + '/admin_unified_requests.php?' + params.toString())
@@ -298,24 +310,30 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
         function applyFilters() {
             currentStatus = document.getElementById('filterStatus').value;
+            currentStartDate = document.getElementById('startDate').value;
+            currentEndDate = document.getElementById('endDate').value;
             loadRequests(1);
         }
 
         function resetFilters() {
             document.getElementById('searchInput').value = '';
             document.getElementById('filterStatus').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
             currentSearch = '';
             currentStatus = '';
+            currentStartDate = '';
+            currentEndDate = '';
             loadRequests(1);
         }
 
-        function handleRequest(id, table, action) {
+        function handleRequest(id, Area, action) {
             const verb = action === 'approve' ? 'APPROVE' : 'REJECT';
             if (!confirm(`Are you sure you want to ${verb} this registration?`)) return;
 
             const fd = new FormData();
             fd.append('request_id', id);
-            fd.append('source_table', table);
+            fd.append('source_table', Area);
             fd.append('action', action);
 
             document.getElementById('requestsTableContainer').style.opacity = '0.5';
@@ -343,4 +361,6 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
     </script>
 </body>
 </html>
+
+
 

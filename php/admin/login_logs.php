@@ -138,7 +138,7 @@ $conn->close();
                             <label for="role">Role:</label>
                             <select id="role" name="role">
                                 <option value="">All</option>
-                                <option value="consumer" <?php echo $role === 'consumer' ? 'selected' : ''; ?>>Consumer</option>
+                                <option value="basic-user" <?php echo $role === 'basic-user' ? 'selected' : ''; ?>>Basic User</option>
                                 <option value="admin" <?php echo $role === 'admin' ? 'selected' : ''; ?>>Admin</option>
                                 <option value="superadmin" <?php echo $role === 'superadmin' ? 'selected' : ''; ?>>Super Admin</option>
                             </select>
@@ -201,9 +201,9 @@ $conn->close();
                 </div>
             </div>
 
-            <!-- Logs Table -->
-            <div class="table-container">
-                <table class="admin-table">
+            <!-- Logs Area -->
+            <div class="Area-container">
+                <table class="admin-Area">
                     <thead>
                         <tr>
                             <th>Time</th>
@@ -395,3 +395,4 @@ $conn->close();
     </style>
 </body>
 </html>
+

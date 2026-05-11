@@ -6,7 +6,7 @@ requireLogin();
 $basePath = getBasePath(__FILE__);
 
 $user = $_SESSION['user'];
-$userRole = $user['role'] ?? 'consumer';
+$userRole = $user['role'] ?? 'basic-user';
 $pageTitle = 'My Profile';
 
 // Calculate age from birthdate
@@ -22,10 +22,10 @@ if (!empty($user['birthdate'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - FoodGrab</title>
-    <link rel="stylesheet" href="<?php echo $basePath; ?>css/serve_asset.php?file=design-system.css">
-    <link rel="stylesheet" href="<?php echo $basePath; ?>css/serve_asset.php?file=dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>My Profile - LittleLands</title>
+    <link rel="stylesheet" href="../../css/design-system.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../../css/dashboard.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* ── Row 1: Profile Card ── */
         .profile-hero {
@@ -52,7 +52,7 @@ if (!empty($user['birthdate'])) {
         .profile-hero-meta { color: var(--text-muted); font-size: 0.9rem; margin: 0 0 0.5rem; }
         .profile-hero-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .badge-role { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        .badge-role.consumer { background: #dbeafe; color: #2563eb; }
+        .badge-role.basic-user { background: #dbeafe; color: #2563eb; }
         .badge-role.admin { background: #fef3c7; color: #d97706; }
         .badge-role.superadmin { background: #ede9fe; color: #7c3aed; }
         .badge-verified { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background: #dcfce7; color: #16a34a; }
@@ -113,6 +113,31 @@ if (!empty($user['birthdate'])) {
             font-size: 0.9rem; transition: all 0.2s;
         }
         .form-group input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+        /* Password container and toggle */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .pw-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+            z-index: 5;
+        }
+        .pw-toggle:hover { color: var(--primary-color); }
+        .password-container input { padding-right: 2.5rem; }
     </style>
 </head>
 <body>
@@ -123,8 +148,9 @@ if (!empty($user['birthdate'])) {
 include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
         <main class="dashboard-main">
-            <h1 class="page-title">My Profile</h1>
-            <p class="page-subtitle">View your account information and manage security settings.</p>
+            <div class="main-content-wrapper">
+                <h1 class="page-title">My Profile</h1>
+                <p class="page-subtitle">View your account information and manage security settings.</p>
 
             <!-- ╔═══ ROW 1: Profile Hero Card ═══╗ -->
             <div class="profile-hero">
@@ -309,9 +335,10 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                 </div>
             </div>
 
+            </div>
         </main>
-        <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
     </div>
+    <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
 
     <!-- Privileges Modal -->
     <div id="privModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1100; align-items:center; justify-content:center;">
@@ -340,24 +367,24 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
         (function(){ var o=document.getElementById('sidebarOverlay'),t=document.getElementById('sidebarToggle'); if(t&&o){ t.addEventListener('click',function(){ document.body.classList.toggle('sidebar-open'); o.classList.toggle('is-open',document.body.classList.contains('sidebar-open')); }); o.addEventListener('click',function(){ document.body.classList.remove('sidebar-open'); o.classList.remove('is-open'); }); } })();
 
         const privilegesConfig = {
-            'consumer': [
+            'basic-user': [
                 { desc: 'Access My Profile',                          has: true  },
                 { desc: 'Change Password',                             has: true  },
-                { desc: 'Browse Restaurants',                          has: true  },
-                { desc: 'Book Table Reservations',                     has: true  },
-                { desc: 'View Personal Reservation History',           has: true  },
-                { desc: 'Manage Consumer Accounts',                    has: false },
+                { desc: 'Browse playgrounds',                          has: true  },
+                { desc: 'Book playground spots',                      has: true  },
+                { desc: 'View Personal booking History',           has: true  },
+                { desc: 'Manage Basic User Accounts',                    has: false },
                 { desc: 'Approve / Reject Registration Requests',      has: false },
                 { desc: 'Block / Unblock Users',                       has: false },
-                { desc: 'Manage Restaurants & Tables',                  has: false },
+                { desc: 'Manage playgrounds & Areas',                  has: false },
                 { desc: 'Full System Administration',                  has: false },
             ],
             'admin': [
                 { desc: 'Access My Profile',                          has: true  },
                 { desc: 'Change Password',                             has: true  },
-                { desc: 'Manage Restaurants & Tables',                  has: true  },
-                { desc: 'View All System Reservations',                has: true  },
-                { desc: 'Manage Consumer Accounts',                    has: true  },
+                { desc: 'Manage playgrounds & Areas',                  has: true  },
+                { desc: 'View All System bookings',                has: true  },
+                { desc: 'Manage Basic User Accounts',                    has: true  },
                 { desc: 'Submit Block / Unblock Requests',             has: true  },
                 { desc: 'Approve Administrative Requests',             has: false },
                 { desc: 'Modify User Roles',                           has: false },
@@ -380,7 +407,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
             const role = '<?php echo $userRole; ?>';
             const name = '<?php echo addslashes($user['firstName'] . ' ' . $user['lastName']); ?>';
             document.getElementById('privUserName').textContent = name + ' (' + role.toUpperCase() + ')';
-            const privs = privilegesConfig[role] || privilegesConfig['consumer'];
+            const privs = privilegesConfig[role] || privilegesConfig['basic-user'];
 
             const listHtml = privs.map(p => `
                 <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px;
@@ -551,3 +578,5 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
     </script>
 </body>
 </html>
+
+

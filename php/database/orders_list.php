@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/db_connect.php';
 require_once __DIR__ . '/../includes/auth.php';
 
-requireRole('consumer');
+requireRole('basic-user');
 $user_id = $_SESSION['user']['id'];
 
 $status = isset($_GET['status']) ? trim($_GET['status']) : '';
@@ -38,7 +38,7 @@ if ($search !== '') {
 
 $where_sql = implode(' AND ', $where);
 
-$count_sql = "SELECT COUNT(*) AS total FROM orders o JOIN restaurants r ON r.id = o.restaurant_id WHERE $where_sql";
+$count_sql = "SELECT COUNT(*) AS total FROM package_orders o JOIN playgrounds r ON r.id = o.playground_id WHERE $where_sql";
 $count_stmt = $conn->prepare($count_sql);
 $count_stmt->bind_param($types, ...$params);
 $count_stmt->execute();
@@ -47,9 +47,9 @@ $count_stmt->close();
 
 $total_pages = $total > 0 ? (int) ceil($total / $per_page) : 0;
 
-$sql = "SELECT o.id, o.restaurant_id, o.status, o.total_amount, o.delivery_address, o.created_at, r.name AS restaurant_name
-    FROM orders o
-    JOIN restaurants r ON r.id = o.restaurant_id
+$sql = "SELECT o.id, o.playground_id, o.status, o.total_amount, o.delivery_address, o.created_at, r.name AS playground_name
+    FROM package_orders o
+    JOIN playgrounds r ON r.id = o.playground_id
     WHERE $where_sql
     ORDER BY o.created_at DESC
     LIMIT ? OFFSET ?";
@@ -72,7 +72,7 @@ $stmt->close();
 $item_preview = [];
 if (!empty($order_ids)) {
     $ids_placeholders = implode(',', array_fill(0, count($order_ids), '?'));
-    $item_sql = "SELECT oi.order_id, m.name FROM order_items oi JOIN menu_items m ON m.id = oi.menu_item_id WHERE oi.order_id IN ($ids_placeholders) ORDER BY oi.order_id, oi.id";
+    $item_sql = "SELECT oi.order_id, m.name FROM package_order_items oi JOIN play_packages m ON m.id = oi.package_id WHERE oi.order_id IN ($ids_placeholders) ORDER BY oi.order_id, oi.id";
     $item_stmt = $conn->prepare($item_sql);
     $item_stmt->bind_param(str_repeat('i', count($order_ids)), ...$order_ids);
     $item_stmt->execute();
@@ -100,3 +100,5 @@ echo json_encode([
         'total_pages' => $total_pages,
     ],
 ]);
+
+

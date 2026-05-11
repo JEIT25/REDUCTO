@@ -2,197 +2,126 @@
 session_start();
 require_once __DIR__ . '/../includes/auth.php';
 requireRole('admin');
-$pageTitle = 'Consumer Management';
+$pageTitle = 'Basic User Management';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle; ?> - FoodGrab</title>
-    <link rel="stylesheet" href="../../css/design-system.css">
-    <link rel="stylesheet" href="../../css/dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Basic User Management - LittleLands</title>
+    <link rel="stylesheet" href="../../css/dashboard.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .users-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 8px; overflow: hidden; }
-        .users-table th, .users-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .users-table th { background: var(--bg-body); font-weight: 600; }
-        .action-btn { padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.85rem; margin-right: 4px; }
-        .btn-edit { background: #3b82f6; color: white; }
-        .btn-block { background: #ef4444; color: white; }
+        .password-container { position: relative; display: flex; align-items: center; }
+        .pw-toggle {
+            position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: #94a3b8; cursor: pointer;
+            padding: 0.25rem; display: flex; align-items: center; justify-content: center;
+            transition: color 0.2s; z-index: 5;
+        }
+        .pw-toggle:hover { color: var(--primary-color); }
+        .password-container input { padding-right: 2.5rem !important; }
 
-        /* Premium Filter Styling */
-        .search-filters {
-            display: flex;
-            gap: 1.25rem;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        }
-        .search-filters .form-group { flex: 1; min-width: 250px; margin-bottom: 0; }
-        .search-filters .form-group label { display: block; margin-bottom: 0.6rem; font-weight: 600; font-size: 0.85rem; color: #64748b; }
-        .search-filters input, .search-filters select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background-color: #f8fafc;
-            transition: all 0.2s;
-        }
-        .search-filters input:focus, .search-filters select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(26, 86, 83, 0.1);
-            background-color: #fff;
-        }
-        .btn-reset {
-            padding: 0.75rem 1.5rem;
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-reset:hover { background: #e2e8f0; color: #1e293b; }
-
-        /* Wizard Form Styles */
-        #consumerModal .modal2-content {
-            padding: 2.5rem;
-            border-radius: 1.5rem;
-            background: #ffffff;
-            max-width: 800px;
-            width: 95%;
-        }
-
-        #consumerForm fieldset {
-            border: 1px solid #f3f4f6;
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-bottom: 0.5rem;
-            background: #fafafa;
-            transition: all 0.2s ease;
-        }
-
-        #consumerForm legend {
-            font-weight: 600;
-            color: var(--primary-color);
-            padding: 0.25rem 1rem;
-            font-size: 1.05rem;
-            background: #ffffff;
-            border: 1px solid #f3f4f6;
-            border-radius: 999px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .validation-message { color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; display: none; }
-        .validation-message.active { display: block; }
-        input.error, select.error { border-color: #dc2626 !important; background-color: #fff5f5 !important; }
-
-        @media (max-width: 600px) {
-            .form-grid { grid-template-columns: 1fr; }
+        /* Wizard specific polish */
+        .form-step { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .form-section-title {
+            font-size: 1.1rem; font-weight: 700; color: var(--primary-color);
+            margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #f1f5f9;
+            display: flex; align-items: center; gap: 0.75rem;
         }
     </style>
 </head>
 <body>
     <?php include __DIR__ . '/../includes/layout/navbar.php'; ?>
     <div class="dashboard-container">
-        <?php $currentPage = 'admin_consumers';
-include __DIR__ . '/../includes/layout/sidebar.php'; ?>
+        <?php $currentPage = 'admin_consumers'; include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
         <main class="dashboard-main">
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1.5rem;">
-                <div>
-                    <h1 class="page-title" style="margin:0; font-size: 1.875rem; color: #0f172a;">Consumer Management</h1>
-                    <p class="page-subtitle" style="margin: 0.5rem 0 0; color: #64748b;">Manage and monitor all registered consumers in the system.</p>
-                </div>
-                <button class="btn-primary" onclick="openUserModal()"><i class="fa-solid fa-plus" style="margin-right:0.25rem;"></i> Add Consumer</button>
-            </div>
+            <div class="main-content-wrapper">
+                <h1 class="page-title">Basic User Management</h1>
+                <p class="page-subtitle">Manage and monitor all registered basic users in the system.</p>
 
-            <!-- Search and Filters -->
-            <div class="search-filters">
-                <div class="form-group">
-                    <label><i class="fa-solid fa-magnifying-glass"></i> Search Filter</label>
-                    <input type="text" id="searchInput" placeholder="Search consumers by name, username, or email..." onkeyup="handleSearch(event)">
+                <div class="filters">
+                    <div style="flex: 1; min-width: 300px; position: relative;">
+                        <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#94a3b8;"></i>
+                        <input type="text" id="searchInput" class="input-field" placeholder="Search basic users..." style="padding-left:48px;" onkeyup="handleSearch(event)">
+                    </div>
+                    <div style="width: 200px;">
+                        <select id="filterStatus" class="input-field" onchange="loadUsers(1)">
+                            <option value="">All Consumers</option>
+                            <option value="active">Active Only</option>
+                            <option value="blocked">Blocked Accounts</option>
+                        </select>
+                    </div>
+                    <button class="submitBtn" onclick="openUserModal()" style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-plus"></i> Add Consumer
+                    </button>
                 </div>
-                <div class="form-group" style="max-width: 200px;">
-                    <label><i class="fa-solid fa-filter"></i> Status</label>
-                    <select id="filterStatus" onchange="loadUsers(1)">
-                        <option value="">All Consumers</option>
-                        <option value="active">Active Only</option>
-                        <option value="blocked">Blocked Accounts</option>
-                    </select>
-                </div>
-                <button class="btn-reset" onclick="resetFilters()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
-            </div>
 
-            <div id="usersTableContainer" style="min-height: 200px;">
-                <div style="padding: 3rem; text-align: center; color: #94a3b8;">
-                    <i class="fa-solid fa-circle-notch fa-spin fa-2x"></i>
-                    <p style="margin-top: 1rem;">Loading consumers...</p>
+                <div id="usersTableContainer" class="Area-container">
+                    <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                        <i class="fa-solid fa-circle-notch fa-spin fa-2x"></i>
+                        <p style="margin-top: 1rem;">Loading consumers...</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="pagination-container" style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
-                <span id="userCountBadge" style="background:#dbeafe; color:#1e40af; padding:0.35rem 0.8rem; border-radius:20px; font-weight:700; font-size:0.85rem;">0 Consumers</span>
-                <div id="paginationControls" style="display: flex; align-items: center; justify-content: flex-end;"></div>
+                <div class="pagination-container">
+                    <span id="userCountBadge" style="background:#dbeafe; color:#1e40af; padding:0.35rem 0.8rem; border-radius:20px; font-weight:700; font-size:0.85rem;">0 Consumers</span>
+                    <div id="paginationControls" style="display: flex; align-items: center; justify-content: flex-end;"></div>
+                </div>
+                </div>
             </div>
         </main>
-        <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
     </div>
+    <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
 
-    <!-- Consumer Modal (Wizard Add/Edit) -->
+    <!-- Basic User Modal (Wizard Add/Edit) -->
     <div id="consumerModal" class="modal2">
-        <div class="modal2-content">
-             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                <h2 id="modalTitle" style="margin:0; font-size:1.5rem; color:#1f2937;">Add Consumer</h2>
+        <div class="modal2-content" style="max-width: 800px; width: 95%;">
+             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 id="modalTitle" style="margin:0; font-size:1.5rem; font-weight:700; color:var(--text-heading);">Add Basic User</h2>
                 <button onclick="closeConsumerModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#94a3b8;">&times;</button>
             </div>
 
-            <form id="consumerForm" novalidate style="width: 100%; text-align: left; max-height: 70vh; overflow-y: auto; padding-right: 10px;">
+            <form id="consumerForm" novalidate>
                 <input type="hidden" name="id" id="consumerId">
-                <input type="hidden" name="role" id="role" value="consumer">
+                <input type="hidden" name="role" id="role" value="basic-user">
 
                 <!-- STEP 1: Personal Info -->
                 <div class="form-step" id="step0">
-                    <fieldset>
-                        <legend>Personal Information (Step 1 of 4)</legend>
-                        <div class="form-grid">
+                    <div class="form-section-title"><i class="fa-solid fa-user-gear"></i> Personal Information</div>
+                    <div class="form-grid">
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Id No <span style="color:#64748b; font-weight:normal; font-size:0.8rem;">(xxxx-xxxx)</span></label>
-                                <input type="text" name="custom_id" id="customId" placeholder="0000-0000">
+                                <label>Identity Number <span class="hint">(xxxx-xxxx)</span></label>
+                                <input type="text" name="custom_id" id="customId" placeholder="0000-0000" class="input-field">
                                 <span class="validation-message" id="customIdError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">First Name <span style="color:red;">*</span></label>
-                                <input type="text" name="firstName" id="firstName">
+                                <label>First Name <span class="required">*</span></label>
+                                <input type="text" name="firstName" id="firstName" class="input-field">
                                 <span class="validation-message" id="firstNameError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Last Name <span style="color:red;">*</span></label>
-                                <input type="text" name="lastName" id="lastName">
+                                <label>Last Name <span class="required">*</span></label>
+                                <input type="text" name="lastName" id="lastName" class="input-field">
                                 <span class="validation-message" id="lastNameError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Middle Initial</label>
-                                <input type="text" name="middleInitial" id="middleInitial" maxlength="1">
+                                <label>Middle Initial</label>
+                                <input type="text" name="middleInitial" id="middleInitial" class="input-field">
                                 <span class="validation-message" id="middleInitialError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Extension</label>
-                                <input type="text" name="extension" id="extension" placeholder="e.g. Jr, Sr, III">
+                                <label>Suffix / Extension</label>
+                                <input type="text" name="extension" id="extension" class="input-field">
                                 <span class="validation-message" id="extensionError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Sex <span style="color:red;">*</span></label>
-                                <select name="sex" id="sex">
+                                <label>Sex <span class="required">*</span></label>
+                                <select name="sex" id="sex" class="input-field">
                                     <option value="">Select</option>
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
@@ -200,96 +129,98 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                                 <span class="validation-message" id="sexError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Birthdate <span style="color:red;">*</span></label>
-                                <input type="date" name="birthdate" id="birthdate">
+                                <label>Birthdate <span class="required">*</span></label>
+                                <input type="date" name="birthdate" id="birthdate" class="input-field">
                                 <span class="validation-message" id="birthdateError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Age</label>
-                                <input type="number" name="age" id="age" readonly style="background:#f1f5f9;">
+                                <label>Calculated Age</label>
+                                <input type="number" name="age" id="age" readonly class="input-field" style="background:#f3f4f6; color:#6b7280; font-weight:600;">
                             </div>
                         </div>
-                    </fieldset>
                 </div>
 
                 <!-- STEP 2: Address -->
                 <div class="form-step" id="step1" style="display:none;">
-                    <fieldset>
-                        <legend>Address (Step 2 of 4)</legend>
-                        <div class="form-grid">
+                    <div class="form-section-title"><i class="fa-solid fa-map-location-dot"></i> Address Details</div>
+                    <div class="form-grid">
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Purok</label>
-                                <input type="text" name="purok" id="purok">
+                                <label>Purok / Zone</label>
+                                <input type="text" name="purok" id="purok" class="input-field">
                                 <span class="validation-message" id="purokError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Barangay</label>
-                                <input type="text" name="barangay" id="barangay">
+                                <label>Barangay</label>
+                                <input type="text" name="barangay" id="barangay" class="input-field">
                                 <span class="validation-message" id="barangayError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">City/Municipality</label>
-                                <input type="text" name="city" id="city">
+                                <label>City / Municipality</label>
+                                <input type="text" name="city" id="city" class="input-field">
                                 <span class="validation-message" id="cityError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Province</label>
-                                <input type="text" name="province" id="province">
+                                <label>Province</label>
+                                <input type="text" name="province" id="province" class="input-field">
                                 <span class="validation-message" id="provinceError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Zip Code</label>
-                                <input type="text" name="zipCode" id="zipCode" maxlength="4">
+                                <label>Zip Code</label>
+                                <input type="text" name="zipCode" id="zipCode" class="input-field">
                                 <span class="validation-message" id="zipCodeError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Country</label>
-                                <input type="text" name="country" id="country" value="Philippines">
+                                <label>Country</label>
+                                <input type="text" name="country" id="country" value="Philippines" class="input-field">
                                 <span class="validation-message" id="countryError"></span>
                             </div>
                         </div>
-                    </fieldset>
                 </div>
 
                 <!-- STEP 3: Credentials -->
                 <div class="form-step" id="step2" style="display:none;">
-                    <fieldset>
-                        <legend>Credentials (Step 3 of 4)</legend>
-                        <div class="form-grid">
+                    <div class="form-section-title"><i class="fa-solid fa-key"></i> Account Credentials</div>
+                    <div class="form-grid">
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Username <span style="color:red;">*</span></label>
-                                <input type="text" name="username" id="username">
+                                <label>Username <span class="required">*</span></label>
+                                <input type="text" name="username" id="username" class="input-field">
                                 <span class="validation-message" id="usernameError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Email <span style="color:red;">*</span></label>
-                                <input type="email" name="email" id="email">
+                                <label>Email Address <span class="required">*</span></label>
+                                <input type="email" name="email" id="email" class="input-field">
                                 <span class="validation-message" id="emailError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Password <span id="pwHint" style="font-weight:normal; font-size:0.8rem; color:#64748b;"></span></label>
-                                <input type="password" name="password" id="password" autocomplete="new-password">
-                                <span id="pwStrength" style="font-size:0.75rem; display:block; margin-top:0.25rem;"></span>
+                                <label>Account Password <span id="pwHint" class="hint"></span></label>
+                                <div class="password-container">
+                                    <input type="password" name="password" id="password" autocomplete="new-password" class="input-field">
+                                    <button type="button" class="pw-toggle" data-target="password">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                                 <span class="validation-message" id="passwordError"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Confirm Password</label>
-                                <input type="password" name="repassword" id="repassword" autocomplete="new-password">
-                                <span id="pwMatch" style="font-size:0.75rem; display:block; margin-top:0.25rem;"></span>
+                                <label>Confirm Password</label>
+                                <div class="password-container">
+                                    <input type="password" name="repassword" id="repassword" autocomplete="new-password" class="input-field">
+                                    <button type="button" class="pw-toggle" data-target="repassword">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                                 <span class="validation-message" id="repasswordError"></span>
                             </div>
                         </div>
-                    </fieldset>
                 </div>
 
                 <!-- STEP 4: Security -->
                 <div class="form-step" id="step3" style="display:none;">
-                    <fieldset id="securitySection">
-                        <legend>Security Questions (Step 4 of 4)</legend>
-                        <div class="form-grid">
+                    <div class="form-section-title"><i class="fa-solid fa-shield-halved"></i> Security Questions</div>
+                    <div id="securitySection" class="form-grid">
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Question 1 <span class="hint" style="font-weight:normal; font-size:0.8rem; color:#64748b;">(Optional)</span></label>
-                                <select name="secure_question" id="sq1">
+                                <label>Question 1 <span class="required">*</span></label>
+                                <select name="secure_question" id="sq1" class="input-field">
                                     <option value="">-- Choose --</option>
                                     <option value="Who is your bestfriend in elementary?">Who is your bestfriend in elementary?</option>
                                     <option value="What is the name of your pet?">What is the name of your pet?</option>
@@ -299,16 +230,18 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                                 <span class="validation-message" id="sq1Error"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Answer 1 <span class="hint" style="font-weight:normal; font-size:0.8rem; color:#64748b;">(Optional)</span></label>
-                                <div class="password-container" style="position:relative;">
-                                    <input type="password" name="secure_answer" id="sa1" style="padding-right:2.5rem;">
-                                    <i class="fa-solid fa-eye eye-icon" onclick="toggleAnswerVisibility(this)" style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
+                                <label>Answer 1 <span class="required">*</span></label>
+                                <div class="password-container">
+                                    <input type="password" name="secure_answer" id="sa1" class="input-field">
+                                    <button type="button" class="pw-toggle" data-target="sa1">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
                                 </div>
                                 <span class="validation-message" id="sa1Error"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Question 2 <span class="hint" style="font-weight:normal; font-size:0.8rem; color:#64748b;">(Optional)</span></label>
-                                <select name="secure_question2" id="sq2">
+                                <label>Question 2 <span class="required">*</span></label>
+                                <select name="secure_question2" id="sq2" class="input-field">
                                     <option value="">-- Choose --</option>
                                     <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
                                     <option value="What elementary school did you attend?">What elementary school did you attend?</option>
@@ -318,16 +251,18 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                                 <span class="validation-message" id="sq2Error"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Answer 2 <span class="hint" style="font-weight:normal; font-size:0.8rem; color:#64748b;">(Optional)</span></label>
-                                <div class="password-container" style="position:relative;">
-                                    <input type="password" name="secure_answer2" id="sa2" style="padding-right:2.5rem;">
-                                    <i class="fa-solid fa-eye eye-icon" onclick="toggleAnswerVisibility(this)" style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
+                                <label>Answer 2 <span class="required">*</span></label>
+                                <div class="password-container">
+                                    <input type="password" name="secure_answer2" id="sa2" class="input-field">
+                                    <button type="button" class="pw-toggle" data-target="sa2">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
                                 </div>
                                 <span class="validation-message" id="sa2Error"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Question 3 <span class="hint" style="font-weight:normal; font-size:0.8rem; color:#64748b;">(Optional)</span></label>
-                                <select name="secure_question3" id="sq3">
+                                <label>Question 3 <span class="required">*</span></label>
+                                <select name="secure_question3" id="sq3" class="input-field">
                                     <option value="">-- Choose --</option>
                                     <option value="What is your father's middle name?">What is your father's middle name?</option>
                                     <option value="What street did you grow up on?">What street did you grow up on?</option>
@@ -337,24 +272,29 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                                 <span class="validation-message" id="sq3Error"></span>
                             </div>
                             <div class="form-group">
-                                <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.4rem; display:block;">Answer 3 <span class="hint" style="font-weight:normal; font-size:0.8rem; color:#64748b;">(Optional)</span></label>
-                                <div class="password-container" style="position:relative;">
-                                    <input type="password" name="secure_answer3" id="sa3" style="padding-right:2.5rem;">
-                                    <i class="fa-solid fa-eye eye-icon" onclick="toggleAnswerVisibility(this)" style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
+                                <label>Answer 3 <span class="required">*</span></label>
+                                <div class="password-container">
+                                    <input type="password" name="secure_answer3" id="sa3" class="input-field">
+                                    <button type="button" class="pw-toggle" data-target="sa3">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
                                 </div>
                                 <span class="validation-message" id="sa3Error"></span>
                             </div>
-                        </div>
-                        <p class="hint" style="margin-top: 1rem; font-style: italic; color: #64748b; font-size: 0.8rem;">Note: If you are editing an existing consumer, you can leave these blank to keep their current security settings.</p>
-                    </fieldset>
+                    </div>
                 </div>
 
-                <div class="form-navigation" style="display:flex; justify-content:space-between; margin-top:1.5rem; border-top:1px solid #e2e8f0; padding-top:1.5rem;">
-                    <button type="button" id="prevBtn" onclick="prevStep()" class="btn-secondary" style="display:none;">Previous Step</button>
-                    <div style="margin-left:auto; display:flex; gap:0.75rem;">
-                        <button type="button" onclick="closeConsumerModal()" class="btn-secondary">Cancel</button>
-                        <button type="button" id="nextBtn" onclick="nextStep()" class="btn-primary">Next Step</button>
-                        <button type="submit" id="submitBtn" class="btn-primary" style="display:none;">Save Consumer</button>
+                <div class="form-navigation" style="display:flex; justify-content:space-between; margin-top:2rem; border-top:1px solid #f1f5f9; padding-top:1.5rem;">
+                    <button type="button" id="prevBtn" onclick="prevStep()" class="btn-secondary" style="display:none;">
+                        <i class="fa-solid fa-chevron-left" style="margin-right:8px;"></i> Previous
+                    </button>
+                    <div style="margin-left:auto; display:flex; gap:1rem;">
+                        <button type="button" id="nextBtn" onclick="nextStep()" class="btn-primary">
+                            Next Step <i class="fa-solid fa-chevron-right" style="margin-left:8px;"></i>
+                        </button>
+                        <button type="submit" id="submitBtn" class="btn-primary" style="display:none;">
+                            <i class="fa-solid fa-floppy-disk" style="margin-right:8px;"></i> Save User
+                        </button>
                     </div>
                 </div>
             </form>
@@ -428,7 +368,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
         // State
         let currentPage = 1;
-        let limit = 10;
+        let limit = 5;
         let currentSearch = '';
         let currentStatus = '';
         let editingUserId = '';
@@ -475,7 +415,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                                         : `<button class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; color: #16a34a; border-color: #16a34a;" onclick="openBlockModal('${u.id}', 'unblock')"><i class="fa-solid fa-unlock" style="margin-right:0.25rem;"></i>Request to Unblock</button>`}
                                 </td>
                                 <td>
-                                    <button class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="viewPrivileges('consumer', '${escapeHtml(u.username)}')">
+                                    <button class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="viewPrivileges('basic-user', '${escapeHtml(u.username)}')">
                                         <i class="fa-solid fa-eye" style="margin-right:0.25rem;"></i> View
                                     </button>
                                 </td>
@@ -526,23 +466,23 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
         }
 
         const privilegesConfig = {
-            'consumer': [
+            'basic-user': [
                 { desc: 'Access My Profile',                          has: true  },
                 { desc: 'Change Password',                             has: true  },
-                { desc: 'Browse Restaurants',                          has: true  },
-                { desc: 'Book Table Reservations',                     has: true  },
-                { desc: 'View Personal Reservation History',           has: true  },
-                { desc: 'Manage Consumer Accounts',                    has: false },
+                { desc: 'Browse playgrounds',                          has: true  },
+                { desc: 'Book playground spots',                     has: true  },
+                { desc: 'View Personal booking History',           has: true  },
+                { desc: 'Manage Basic User Accounts',                    has: false },
                 { desc: 'Approve / Reject Registration Requests',      has: false },
                 { desc: 'Block / Unblock Users',                       has: false },
-                { desc: 'Manage Restaurants & Tables',                  has: false },
+                { desc: 'Manage playgrounds & Areas',                  has: false },
                 { desc: 'Full System Administration',                  has: false },
             ],
         };
 
         function viewPrivileges(role, name) {
             document.getElementById('privUserName').textContent = name + ' (' + role + ')';
-            const privs = privilegesConfig[role] || privilegesConfig['consumer'];
+            const privs = privilegesConfig[role] || privilegesConfig['basic-user'];
 
             const listHtml = privs.map(p => `
                 <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px;
@@ -737,13 +677,32 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
         function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
         // Init
-        AdminUserValidation.init(document.getElementById('consumerForm'), {
-            apiBase: api,
-            roleSelector: '#role',
-            securitySection: '#securitySection'
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            AdminUserValidation.init(document.getElementById('consumerForm'), {
+                apiBase: api,
+                roleSelector: '#role',
+                securitySection: '#securitySection'
+            });
+            loadUsers();
 
-        loadUsers();
+            // Password Toggle logic
+            document.addEventListener('click', function(e) {
+                const toggle = e.target.closest('.pw-toggle');
+                if (toggle) {
+                    const input = document.getElementById(toggle.dataset.target);
+                    const icon = toggle.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.replace('fa-eye', 'fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.replace('fa-eye-slash', 'fa-eye');
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
+
+

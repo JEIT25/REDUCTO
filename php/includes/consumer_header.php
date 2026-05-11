@@ -1,5 +1,5 @@
 <?php
-/** Consumer dashboard layout: header + sidebar. Expects $base, $current_page. */
+/** Basic User dashboard layout: header + sidebar. Expects $base, $current_page. */
 ?>
 <header class="dashboard-header">
     <div class="navbar-left">
@@ -24,8 +24,8 @@
             echo '<p>' . htmlspecialchars($u['email']) . '</p>';
         } ?>
     </div>
-    <nav class="sidebar-menu">
-        <a href="order_food.php" class="<?php echo ($current_page ?? '') === 'order_food' ? 'active' : ''; ?>">Order Food</a>
+    <nav class="sidebar-nav">
+        <a href="book_package.php" class="<?php echo ($current_page ?? '') === 'order_food' ? 'active' : ''; ?>">Order Food</a>
         <a href="order_history.php" class="<?php echo ($current_page ?? '') === 'order_history' ? 'active' : ''; ?>">Order History</a>
         <a href="track_order.php" class="<?php echo ($current_page ?? '') === 'track_order' ? 'active' : ''; ?>">Track Order</a>
         <a href="favorites.php" class="<?php echo ($current_page ?? '') === 'favorites' ? 'active' : ''; ?>">Favorites</a>
@@ -33,3 +33,5 @@
         <a href="change_password.php">Change My Password</a>
     </nav>
 </aside>
+
+

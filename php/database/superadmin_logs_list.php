@@ -6,7 +6,9 @@ require_once __DIR__ . '/../includes/auth.php';
 
 requireRole('superadmin');
 
-$date = trim($_GET['date'] ?? '');
+$startDate = trim($_GET['startDate'] ?? '');
+$endDate = trim($_GET['endDate'] ?? '');
+
 $page = max(1, (int)($_GET['page'] ?? 1));
 $limit = min(100, max(1, (int)($_GET['limit'] ?? 10)));
 $offset = ($page - 1) * $limit;
@@ -15,10 +17,19 @@ $whereClause = "WHERE l.action = 'login'";
 $types = "";
 $params = [];
 
-if ($date) {
-    $whereClause .= " AND DATE(l.log_time) = ?";
+if ($startDate && $endDate) {
+    $whereClause .= " AND DATE(l.log_time) BETWEEN ? AND ?";
+    $types .= "ss";
+    $params[] = $startDate;
+    $params[] = $endDate;
+} elseif ($startDate) {
+    $whereClause .= " AND DATE(l.log_time) >= ?";
     $types .= "s";
-    $params[] = $date;
+    $params[] = $startDate;
+} elseif ($endDate) {
+    $whereClause .= " AND DATE(l.log_time) <= ?";
+    $types .= "s";
+    $params[] = $endDate;
 }
 
 $search = trim($_GET['search'] ?? '');

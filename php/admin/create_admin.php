@@ -176,7 +176,7 @@ $conn->close();
                 <h3>Important Notes:</h3>
                 <ul>
                     <li>The new admin will receive an email with temporary password</li>
-                    <li>Admin accounts will have access to restaurant and order management</li>
+                    <li>Admin accounts will have access to playground and order management</li>
                     <li>Super admin accounts will have full system access</li>
                     <li>All admin account creations are logged for security</li>
                     <li>The new admin must change their password on first login</li>
@@ -192,3 +192,4 @@ $conn->close();
     </footer>
 </body>
 </html>
+

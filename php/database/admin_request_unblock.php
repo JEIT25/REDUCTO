@@ -16,8 +16,8 @@ if (!$target_id || !$reason) {
 
 $requester_id = $_SESSION['user']['id'];
 
-// Check for existing pending UNBLOCK request for this target
-$check = $conn->prepare("SELECT id FROM user_block_requests WHERE target_id = ? AND status = 'pending' AND request_type = 'unblock'");
+// Check for existing pending UNBLOCK request for this target in 'approvals' table
+$check = $conn->prepare("SELECT id FROM approvals WHERE target_id = ? AND status = 'pending' AND action_type = 'unblock'");
 $check->bind_param('s', $target_id);
 $check->execute();
 $existing = $check->get_result();
@@ -29,16 +29,15 @@ if ($existing->num_rows > 0) {
 }
 $check->close();
 
-// Insert unblock request
-$stmt = $conn->prepare("INSERT INTO user_block_requests (requester_id, target_id, reason, status, request_type) VALUES (?, ?, ?, 'pending', 'unblock')");
+// Insert unblock request into 'approvals'
+$stmt = $conn->prepare("INSERT INTO approvals (requested_by, target_id, target_type, action_type, reason, status) VALUES (?, ?, 'user', 'unblock', ?, 'pending')");
 $stmt->bind_param('sss', $requester_id, $target_id, $reason);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true]);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Database error']);
+    echo json_encode(['success' => false, 'error' => 'Database error: ' . $conn->error]);
 }
 $stmt->close();
 $conn->close();
 ?>
-

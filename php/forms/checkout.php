@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../includes/auth_check.php';
-requireRole('consumer');
+requireRole('basic-user');
 
 $basePath = getBasePath(__FILE__);
 $pageTitle = 'Checkout';
@@ -99,7 +99,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                     <div style="font-size: 3rem; color: var(--border-color); margin-bottom: 1rem;"><i class="fa-solid fa-cart-shopping"></i></div>
                     <h2 style="margin-bottom: 0.5rem;">Your cart is empty</h2>
                     <p class="muted" style="margin-bottom: 1.5rem;">Add items before checking out.</p>
-                    <a href="order_food.php" class="btn-primary" style="padding: 0.75rem 2rem;">Start Ordering</a>
+                    <a href="book_package.php" class="btn-primary" style="padding: 0.75rem 2rem;">Start Ordering</a>
                 </div>
             </div>
         </main>
@@ -156,7 +156,7 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
                         html += `<div class="checkout-item">
                             <div class="checkout-item-info">
                                 <h4>${escapeHtml(item.name)}</h4>
-                                <div class="ci-meta"><i class="fa-solid fa-store" style="margin-right:0.2rem;"></i> ${escapeHtml(item.restaurant_name)} · Qty: ${item.quantity}</div>
+                                <div class="ci-meta"><i class="fa-solid fa-tent" style="margin-right:0.2rem;"></i> ${escapeHtml(item.playground_name)} · Qty: ${item.quantity}</div>
                             </div>
                             <div class="checkout-item-price">₱${(price * item.quantity).toFixed(2)}</div>
                         </div>`;
@@ -207,3 +207,6 @@ include __DIR__ . '/../includes/layout/sidebar.php'; ?>
     </script>
 </body>
 </html>
+
+
+

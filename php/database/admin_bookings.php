@@ -12,19 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $offset = ($page - 1) * $limit;
 
     // Count
-    $countRes = $conn->query("SELECT COUNT(*) as total FROM reservations");
+    $countRes = $conn->query("SELECT COUNT(*) as total FROM bookings");
     $total = $countRes->fetch_assoc()['total'];
     $totalPages = ceil($total / $limit);
 
-    // Fetch Reservations
-    // Joining users and restaurants to get names
-    $sql = "SELECT r.id, r.reservation_date, r.reservation_time, r.party_size, r.status, r.created_at,
+    // Fetch bookings
+    // Joining users and playgrounds to get names
+    $sql = "SELECT r.id, r.booking_date, r.booking_time, r.group_size, r.status, r.created_at,
                    u.firstName, u.lastName, u.email,
-                   rest.name as restaurant_name
-            FROM reservations r
+                   rest.name as playground_name
+            FROM bookings r
             JOIN users u ON r.user_id = u.id
-            JOIN restaurants rest ON r.restaurant_id = rest.id
-            ORDER BY r.reservation_date DESC, r.reservation_time DESC
+            JOIN playgrounds rest ON r.playground_id = rest.id
+            ORDER BY r.booking_date DESC, r.booking_time DESC
             LIMIT ? OFFSET ?";
 
     $stmt = $conn->prepare($sql);
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     echo json_encode([
         'success' => true,
-        'reservations' => $list,
+        'bookings' => $list,
         'pagination' => ['current' => $page, 'total_pages' => $totalPages, 'total_records' => $total]
     ]);
     exit;
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($id > 0) {
-            $stmt = $conn->prepare("UPDATE reservations SET status = ? WHERE id = ?");
+            $stmt = $conn->prepare("UPDATE bookings SET status = ? WHERE id = ?");
             $stmt->bind_param('si', $status, $id);
             if ($stmt->execute()) {
                 echo json_encode(['success' => true]);
@@ -73,3 +73,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $conn->close();
+
+

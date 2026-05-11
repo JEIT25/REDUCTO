@@ -6,167 +6,47 @@ $pageTitle = 'User Management';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle; ?> - NAIGO</title>
-    <link rel="stylesheet" href="../../css/design-system.css">
-    <link rel="stylesheet" href="../../css/dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>User Management - LittleLands</title>
+    <link rel="stylesheet" href="../../css/dashboard.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .users-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 8px; overflow: hidden; }
-        .users-table th, .users-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .users-table th { background: var(--bg-body); font-weight: 600; }
-        .action-btn { padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 0.85rem; margin-right: 4px; }
-        .btn-edit { background: #3b82f6; color: white; }
-        .btn-block { background: #ef4444; color: white; }
-        .btn-unblock { background: #10b981; color: white; }
-        .btn-priv { background: #8b5cf6; color: white; }
-        .blocked-row { background-color: #f1f5f9 !important; }
-        .blocked-row td { color: #94a3b8 !important; }
-        .blocked-row .status-badge { filter: grayscale(1); opacity: 0.6; }
-
-        /* Enhanced Modal Styling */
-        #userModal .modal2-content {
-            padding: 3.5rem;
-            border: 1px solid rgba(26, 86, 83, 0.08);
-            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.18);
-            border-radius: 1.5rem;
-            background: #fff;
+        .password-container { position: relative; display: flex; align-items: center; }
+        .pw-toggle {
+            position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: #94a3b8; cursor: pointer;
+            padding: 0.25rem; display: flex; align-items: center; justify-content: center;
+            transition: color 0.2s; z-index: 5;
         }
-
-        #userForm fieldset {
-            border: 1px solid #f3f4f6;
-            border-radius: 1.25rem;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            background: #fff;
-            transition: all 0.25s ease;
-        }
-        #userForm fieldset:hover {
-            border-color: rgba(26, 86, 83, 0.15);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
-            transform: translateY(-1px);
-        }
-
-        #userForm legend {
-            font-weight: 700;
-            color: var(--primary-color);
-            padding: 0 1rem;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            background: #fff;
-        }
-
-        /* Modal Form Styles */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .section-heading { grid-column: 1 / -1; color: var(--primary-color); border-bottom: 2px solid #f3f4f6; padding-bottom: 0.5rem; margin-top: 1rem; margin-bottom: 0.5rem; }
-        .required { color: #ef4444; margin-left: 2px; }
-        .hint { font-size: 0.8rem; color: #94a3b8; font-weight: normal; }
-
-        /* RED Validation Messages */
-        .validation-message {
-            color: #ef4444 !important;
-            font-size: 0.75rem;
-            margin-top: 0.4rem;
-            display: block;
-            font-weight: 600;
-            animation: fadeIn 0.2s ease-out;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
-
-        @media (max-width: 600px) {
-            .form-grid { grid-template-columns: 1fr; }
-        }
-
-        /* Premium Stepper Styles */
-        .modal-stepper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3rem;
-            position: relative;
-            padding: 0 2rem;
-        }
-        .modal-stepper::before {
-            content: '';
-            position: absolute;
-            top: 16px;
-            left: 3rem;
-            right: 3rem;
-            height: 2px;
-            background: #f3f4f6;
-            z-index: 1;
-        }
-        .step-item {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-            background: #fff;
-            padding: 0 8px;
-        }
-        .step-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #fff;
-            border: 2px solid #f3f4f6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: #d1d5db;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .step-label {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: color 0.3s ease;
-        }
-        .step-item.active .step-circle {
-            border-color: var(--primary-color);
-            background: var(--primary-color);
-            color: #fff;
-            transform: scale(1.15);
-            box-shadow: 0 0 0 6px rgba(26, 86, 83, 0.08);
-        }
-        .step-item.active .step-label { color: var(--primary-color); }
-        .step-item.completed .step-circle {
-            border-color: #10b981;
-            background: #10b981;
-            color: #fff;
-        }
-        .step-item.completed .step-label { color: #10b981; }
-        .step-circle i { font-size: 0.75rem; }
+        .pw-toggle:hover { color: var(--primary-color); }
+        .password-container input { padding-right: 2.5rem !important; }
     </style>
 </head>
+
 <body>
     <?php include __DIR__ . '/../includes/layout/navbar.php'; ?>
     <div class="dashboard-container">
         <!-- Sidebar -->
-        <?php $currentPage = 'superadmin_users'; include __DIR__ . '/../includes/layout/sidebar.php'; ?>
+        <?php $currentPage = 'superadmin_users';
+        include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
         <main class="dashboard-main">
-            <header style="margin-bottom: 2rem;">
-                <h1 class="page-title" style="font-size: 1.75rem; margin-bottom: 0.25rem;">User Management</h1>
-                <p class="page-subtitle text-muted" style="margin: 0; font-size: 0.95rem;">Manage identities, roles, and access across the platform.</p>
-            </header>
+            <div class="main-content-wrapper">
+                <h1 class="page-title">User Management</h1>
+                <p class="page-subtitle">Manage identities, roles, and access across the platform.</p>
 
-            <article class="sa-box" style="margin-bottom: 2rem; background: var(--bg-card); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm);">
-                <header class="sa-box-header" style="margin-bottom: 1.5rem;">
-                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; width: 100%;">
-                        <input type="text" id="searchInput" placeholder="Search by name, username, or email..." class="input-field" style="min-width: 200px; flex: 1;" onkeyup="handleSearch(event)">
+                <div class="filters">
+                    <div style="flex: 1; min-width: 300px; position: relative;">
+                        <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#94a3b8;"></i>
+                        <input type="text" id="searchInput" class="input-field" placeholder="Search accounts..." style="padding-left:48px;" onkeyup="handleSearch(event)">
+                    </div>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                         <select id="filterRole" class="input-field" style="width: auto;" onchange="applyFilters()">
                             <option value="">All Roles</option>
-                            <option value="consumer">Consumer</option>
+                            <option value="basic-user">Basic User</option>
                             <option value="admin">Admin</option>
                             <option value="superadmin">Superadmin</option>
                         </select>
@@ -175,57 +55,59 @@ $pageTitle = 'User Management';
                             <option value="active">Active</option>
                             <option value="blocked">Blocked</option>
                         </select>
-                        <button class="btn-secondary" onclick="resetFilters()">Reset</button>
-                        <button class="btn-primary" onclick="openUserModal()" style="white-space: nowrap;"><i class="fa-solid fa-plus" style="margin-right: 8px;"></i> Add User</button>
-                    </div>
-                </header>
-
-                <div class="sa-box-content no-pad">
-                    <div id="usersTableContainer">
-                        <div style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading...</div>
+                        <button class="submitBtn" onclick="openUserModal()" style="white-space: nowrap;">
+                            <i class="fa-solid fa-plus" style="margin-right: 8px;"></i> Add User
+                        </button>
                     </div>
                 </div>
-            </article>
 
-            <div class="pagination-container" style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
-                <span id="userCountBadge" style="background:#dbeafe; color:#1e40af; padding:0.35rem 0.8rem; border-radius:20px; font-weight:700; font-size:0.85rem;">0 Users</span>
-                <div id="paginationControls" style="display: flex; align-items: center; justify-content: flex-end;"></div>
+                <div id="usersTableContainer" class="Area-container">
+                    <div style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading users...</div>
+                </div>
+
+                <div class="pagination-container" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                    <span id="userCountBadge" style="background:#dbeafe; color:#1e40af; padding:0.35rem 0.8rem; border-radius:20px; font-weight:700; font-size:0.85rem;">0 Users</span>
+                    <div id="paginationControls" style="display: flex; align-items: center; justify-content: flex-end;"></div>
+                </div>
             </div>
         </main>
-        <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
     </div>
+    <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal2">
-        <div class="modal2-content" style="max-width: 400px;">
-            <h2 style="color: var(--error-color);">Confirm Delete</h2>
-            <p>Are you sure you want to permanently delete <span id="deleteUserName" style="font-weight: bold;"></span>?</p>
-            <p class="hint" style="margin-top: 0.5rem;">This action cannot be undone and may fail if the user has active orders or dependencies.</p>
-            <div style="text-align: right; margin-top: 1.5rem;">
-                <button onclick="closeDeleteModal()" class="btn-secondary">Cancel</button>
-                <button id="confirmDeleteBtn" class="btn-primary" style="background: var(--error-color); border-color: var(--error-color);">Delete User</button>
+        <div class="modal2-content" style="max-width: 420px; text-align: center; padding: 2.5rem;">
+            <div style="width: 64px; height: 64px; background: #fef2f2; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.75rem;">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <h2 style="margin: 0 0 0.5rem; font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--text-heading);">Confirm Delete</h2>
+            <p style="color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem;">
+                Are you sure you want to permanently delete <span id="deleteUserName" style="font-weight: 800; color: var(--text-heading);"></span>?
+                <br><small style="display: block; margin-top: 0.5rem;">This action cannot be undone.</small>
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <button onclick="closeDeleteModal()" class="btn-secondary" style="justify-content: center;">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn-primary" style="background: var(--error-color); justify-content: center;">Delete User</button>
             </div>
         </div>
     </div>
 
     <!-- Response Modal -->
-    <div id="responseModal" class="modal2" style="z-index: 1050;">
-        <div class="modal2-content" style="max-width: 400px; text-align: center;">
-            <div id="responseIcon" style="font-size: 3rem; margin-bottom: 1rem;"></div>
-            <h2 id="responseTitle">Success</h2>
-            <p id="responseMessage"></p>
-            <div style="margin-top: 1.5rem;">
-                <button onclick="closeResponseModal()" class="btn-primary">OK</button>
-            </div>
+    <div id="responseModal" class="modal2" style="z-index: 2100;">
+        <div class="modal2-content" style="max-width: 400px; text-align: center; padding: 2.5rem;">
+            <div id="responseIcon" style="font-size: 3.5rem; margin-bottom: 1.5rem;"></div>
+            <h2 id="responseTitle" style="margin: 0 0 0.5rem; font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 700;">Success</h2>
+            <p id="responseMessage" style="color: var(--text-muted); line-height: 1.5; margin-bottom: 2rem;"></p>
+            <button onclick="closeResponseModal()" class="btn-primary" style="width: 100%; justify-content: center;">Got it</button>
         </div>
     </div>
 
     <!-- User Modal (Add/Edit) -->
     <div id="userModal" class="modal2">
-        <div class="modal2-content" style="max-width: 850px; width: 95%;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                <h2 id="modalTitle" style="margin:0; font-size:1.6rem; font-weight:700; color:#1f2937;">Add User</h2>
-                <button onclick="closeUserModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#94a3b8; transition:color 0.2s;" onmouseover="this.style.color='#1f2937'" onmouseout="this.style.color='#94a3b8'">&times;</button>
+        <div class="modal2-content" style="max-width: 800px; width: 95%;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 id="modalTitle" style="margin:0; font-size:1.5rem; font-weight:700; color:var(--text-heading);">Add User</h2>
+                <button onclick="closeUserModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#94a3b8;">&times;</button>
             </div>
 
             <!-- Stepper -->
@@ -248,26 +130,25 @@ $pageTitle = 'User Management';
                 </div>
             </div>
 
-            <form id="userForm" novalidate style="width: 100%; text-align: left; max-height: 65vh; overflow-y: auto; padding: 0.5rem 1rem 0.5rem 0;">
+            <form id="userForm" novalidate class="modal-scrollable">
                 <input type="hidden" name="id" id="userId">
 
-                <!-- STEP 1: Personal Info -->
                 <div class="form-step" id="step0">
-                    <fieldset>
-                        <legend>Personal Information</legend>
-                        <div class="form-grid">
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label style="font-weight:600; color:#4b5563; margin-bottom:0.5rem; display:block;">Select User Role<span class="required">*</span></label>
-                                <select name="role" id="role" class="input-field" style="background:#f9fafb;">
-                                    <option value="consumer">Consumer</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="superadmin">Superadmin</option>
-                                </select>
-                                <span class="hint" style="display:block; margin-top:0.5rem;">Administrative roles (Admin/Superadmin) skip security question setup.</span>
-                            </div>
+                    <div class="form-section-title">Personal Information</div>
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Select User Role <span class="required">*</span></label>
+                            <select name="role" id="role" class="input-field">
+                                <option value="basic-user">Basic User</option>
+                                <option value="admin">Admin</option>
+                                <option value="superadmin">Superadmin</option>
+                            </select>
+                            <span class="hint">Administrative roles (Admin/Superadmin) skip security question setup.</span>
+                        </div>
                             <div class="form-group">
                                 <label>Identity Number <span class="hint">(xxxx-xxxx)</span></label>
-                                <input type="text" name="custom_id" id="customId" placeholder="Auto-generated if blank" class="input-field">
+                                <input type="text" name="custom_id" id="customId" placeholder="0000-0000"
+                                    class="input-field">
                                 <span class="validation-message" id="customIdError"></span>
                             </div>
                             <div class="form-group">
@@ -306,17 +187,16 @@ $pageTitle = 'User Management';
                             </div>
                             <div class="form-group">
                                 <label>Calculated Age</label>
-                                <input type="number" name="age" id="age" readonly class="input-field" style="background:#f3f4f6; color:#6b7280; font-weight:600;">
+                                <input type="number" name="age" id="age" readonly class="input-field"
+                                    style="background:#f3f4f6; color:#6b7280; font-weight:600;">
                             </div>
-                        </div>
-                    </fieldset>
+                    </div>
                 </div>
 
                 <!-- STEP 2: Address -->
                 <div class="form-step" id="step1" style="display:none;">
-                    <fieldset>
-                        <legend>Address Details</legend>
-                        <div class="form-grid">
+                    <div class="form-section-title">Address Details</div>
+                    <div class="form-grid">
                             <div class="form-group">
                                 <label>Purok / Zone</label>
                                 <input type="text" name="purok" id="purok" class="input-field">
@@ -348,14 +228,12 @@ $pageTitle = 'User Management';
                                 <span class="validation-message" id="countryError"></span>
                             </div>
                         </div>
-                    </fieldset>
                 </div>
 
                 <!-- STEP 3: Credentials -->
                 <div class="form-step" id="step2" style="display:none;">
-                    <fieldset>
-                        <legend>Account Credentials</legend>
-                        <div class="form-grid">
+                    <div class="form-section-title">Account Credentials</div>
+                    <div class="form-grid">
                             <div class="form-group">
                                 <label>Username<span class="required">*</span></label>
                                 <input type="text" name="username" id="username" class="input-field">
@@ -368,30 +246,41 @@ $pageTitle = 'User Management';
                             </div>
                             <div class="form-group">
                                 <label>Account Password <span id="pwHint" class="hint"></span></label>
-                                <input type="password" name="password" id="password" autocomplete="new-password" class="input-field">
+                                <div class="password-container">
+                                    <input type="password" name="password" id="password" autocomplete="new-password" class="input-field">
+                                    <button type="button" class="pw-toggle" data-target="password">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                                 <span class="validation-message" id="passwordError"></span>
                             </div>
                             <div class="form-group">
                                 <label>Confirm Password</label>
-                                <input type="password" name="repassword" id="repassword" autocomplete="new-password" class="input-field">
+                                <div class="password-container">
+                                    <input type="password" name="repassword" id="repassword" autocomplete="new-password" class="input-field">
+                                    <button type="button" class="pw-toggle" data-target="repassword">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                                 <span class="validation-message" id="repasswordError"></span>
                             </div>
                         </div>
-                    </fieldset>
                 </div>
 
                 <!-- STEP 4: Security -->
                 <div class="form-step" id="step3" style="display:none;">
-                    <fieldset id="securitySection">
-                        <legend>Security Setup</legend>
+                    <div id="securitySection">
+                        <div class="form-section-title">Security Setup</div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Security Question 1 <span class="hint">(Optional)</span></label>
                                 <select name="secure_question" id="sq1" class="input-field">
                                     <option value="">-- Select Question --</option>
-                                    <option value="Who is your bestfriend in elementary?">Who is your bestfriend in elementary?</option>
+                                    <option value="Who is your bestfriend in elementary?">Who is your bestfriend in
+                                        elementary?</option>
                                     <option value="What is the name of your pet?">What is the name of your pet?</option>
-                                    <option value="Who is your favorite teacher in highschool?">Who is your favorite teacher in highschool?</option>
+                                    <option value="Who is your favorite teacher in highschool?">Who is your favorite
+                                        teacher in highschool?</option>
                                     <option value="What was your first car?">What was your first car?</option>
                                     <option value="In what city were you born?">In what city were you born?</option>
                                 </select>
@@ -401,7 +290,8 @@ $pageTitle = 'User Management';
                                 <label>Answer 1 <span class="hint">(Optional)</span></label>
                                 <div class="password-container" style="position:relative;">
                                     <input type="password" name="secure_answer" id="sa1" class="input-field">
-                                    <i class="fa-solid fa-eye eye-icon pw-toggle" onclick="toggleAnswerVisibility(this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
+                                    <i class="fa-solid fa-eye eye-icon pw-toggle" onclick="toggleAnswerVisibility(this)"
+                                        style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
                                 </div>
                                 <span class="validation-message" id="sa1Error"></span>
                             </div>
@@ -409,11 +299,15 @@ $pageTitle = 'User Management';
                                 <label>Security Question 2 <span class="hint">(Optional)</span></label>
                                 <select name="secure_question2" id="sq2" class="input-field">
                                     <option value="">-- Select Question --</option>
-                                    <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
-                                    <option value="What elementary school did you attend?">What elementary school did you attend?</option>
+                                    <option value="What is your mother's maiden name?">What is your mother's maiden
+                                        name?</option>
+                                    <option value="What elementary school did you attend?">What elementary school did
+                                        you attend?</option>
                                     <option value="What is your favorite food?">What is your favorite food?</option>
-                                    <option value="What was your childhood nickname?">What was your childhood nickname?</option>
-                                    <option value="What is the name of your best friend?">What is the name of your best friend?</option>
+                                    <option value="What was your childhood nickname?">What was your childhood nickname?
+                                    </option>
+                                    <option value="What is the name of your best friend?">What is the name of your best
+                                        friend?</option>
                                 </select>
                                 <span class="validation-message" id="sq2Error"></span>
                             </div>
@@ -421,7 +315,8 @@ $pageTitle = 'User Management';
                                 <label>Answer 2 <span class="hint">(Optional)</span></label>
                                 <div class="password-container" style="position:relative;">
                                     <input type="password" name="secure_answer2" id="sa2" class="input-field">
-                                    <i class="fa-solid fa-eye eye-icon pw-toggle" onclick="toggleAnswerVisibility(this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
+                                    <i class="fa-solid fa-eye eye-icon pw-toggle" onclick="toggleAnswerVisibility(this)"
+                                        style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
                                 </div>
                                 <span class="validation-message" id="sa2Error"></span>
                             </div>
@@ -429,11 +324,15 @@ $pageTitle = 'User Management';
                                 <label>Security Question 3 <span class="hint">(Optional)</span></label>
                                 <select name="secure_question3" id="sq3" class="input-field">
                                     <option value="">-- Select Question --</option>
-                                    <option value="What is your father's middle name?">What is your father's middle name?</option>
-                                    <option value="What street did you grow up on?">What street did you grow up on?</option>
+                                    <option value="What is your father's middle name?">What is your father's middle
+                                        name?</option>
+                                    <option value="What street did you grow up on?">What street did you grow up on?
+                                    </option>
                                     <option value="What is your favorite movie?">What is your favorite movie?</option>
-                                    <option value="What is the name of your first pet?">What is the name of your first pet?</option>
-                                    <option value="What year did you graduate high school?">What year did you graduate high school?</option>
+                                    <option value="What is the name of your first pet?">What is the name of your first
+                                        pet?</option>
+                                    <option value="What year did you graduate high school?">What year did you graduate
+                                        high school?</option>
                                 </select>
                                 <span class="validation-message" id="sq3Error"></span>
                             </div>
@@ -441,21 +340,29 @@ $pageTitle = 'User Management';
                                 <label>Answer 3 <span class="hint">(Optional)</span></label>
                                 <div class="password-container" style="position:relative;">
                                     <input type="password" name="secure_answer3" id="sa3" class="input-field">
-                                    <i class="fa-solid fa-eye eye-icon pw-toggle" onclick="toggleAnswerVisibility(this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
+                                    <i class="fa-solid fa-eye eye-icon pw-toggle" onclick="toggleAnswerVisibility(this)"
+                                        style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
                                 </div>
                                 <span class="validation-message" id="sa3Error"></span>
                             </div>
                         </div>
-                        <p class="hint" style="margin-top: 1rem; font-style: italic;">Note: If you are editing an existing user, you can leave these blank to keep the current security settings.</p>
-                    </fieldset>
+                        <p class="hint" style="margin-top: 1.5rem; font-style: italic; background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid var(--primary-color);">Note: If you are editing an existing user, you can leave these blank to keep the current security settings.</p>
+                    </div>
                 </div>
 
-                <div class="form-navigation-buttons" style="display:flex; justify-content:space-between; margin-top:2rem; border-top: 1px solid #f3f4f6; padding-top: 2rem;">
-                    <button type="button" id="prevBtn" onclick="prevStep()" class="btn-secondary" style="display:none; padding: 0.75rem 1.5rem;">Back</button>
-                    <div style="margin-left: auto; display:flex; gap:10px;">
-                        <button type="button" onclick="closeUserModal()" class="btn-secondary" style="padding: 0.75rem 1.5rem;">Cancel</button>
-                        <button type="button" id="nextBtn" onclick="nextStep()" class="btn-primary" style="padding: 0.75rem 1.5rem; background: var(--primary-color);">Next Step <i class="fa-solid fa-arrow-right" style="margin-left:8px; font-size:0.8rem;"></i></button>
-                        <button type="submit" id="submitBtn" class="btn-primary" style="display:none; padding: 0.75rem 2rem; background:#10b981; border-color:#10b981;">Complete & Save <i class="fa-solid fa-circle-check" style="margin-left:8px;"></i></button>
+                <div class="form-navigation" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9;">
+                    <div class="nav-left">
+                        <button type="button" id="prevBtn" onclick="prevStep()" class="btn-secondary" style="display:none; min-width: 120px;">
+                            <i class="fa-solid fa-arrow-left"></i> Previous
+                        </button>
+                    </div>
+                    <div class="nav-right" style="display:flex; gap:12px;">
+                        <button type="button" id="nextBtn" onclick="nextStep()" class="btn-primary" style="min-width: 120px; justify-content: center;">
+                            Next <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button type="submit" id="submitBtn" class="btn-primary" style="display:none; background:#10b981; min-width: 160px; justify-content: center;">
+                            Complete & Save <i class="fa-solid fa-circle-check"></i>
+                        </button>
                     </div>
                 </div>
             </form>
@@ -464,11 +371,12 @@ $pageTitle = 'User Management';
 
     <!-- Privileges Modal -->
     <div id="privModal" class="modal2">
-        <div class="modal2-content" style="max-width:450px;">
+        <div class="modal2-content" style="max-width:550px; width:95%; max-height: 90vh; display: flex; flex-direction: column;">
             <h2 style="margin:0 0 0.5rem; font-size:1.5rem; color:#1f2937;">Account Privileges</h2>
             <p id="privUserName" style="font-weight: 600; margin-bottom: 1.5rem; color:#64748b; font-size:0.9rem;"></p>
-            <div id="privContent" style="width: 100%;"></div>
-            <button onclick="document.getElementById('privModal').style.display='none'" class="btn-primary" style="margin-top: 1.5rem; width:100%; justify-content:center;">Close</button>
+            <div id="privContent" class="modal-scrollable" style="width: 100%; flex: 1;"></div>
+            <button onclick="document.getElementById('privModal').style.display='none'" class="btn-primary"
+                style="margin-top: 1.5rem; width:100%; justify-content:center;">Close</button>
         </div>
     </div>
 
@@ -488,7 +396,7 @@ $pageTitle = 'User Management';
         const currentUserId = '<?php echo $_SESSION['user']['id']; ?>';
 
         let currentPage = 1;
-        let limit = 10;
+        let limit = 5;
         let currentSearch = '';
         let currentRole = '';
         let currentStatus = '';
@@ -512,19 +420,19 @@ $pageTitle = 'User Management';
                             const isBlocked = u.is_blocked == 1;
                             const isSelf = u.id === currentUserId;
                             const rowClass = isBlocked ? 'blocked-row' : '';
-                            const roleLower = (u.role || 'consumer').toLowerCase();
+                            const roleLower = (u.role || 'basic-user').toLowerCase();
                             let roleClass = roleLower === 'admin' ? 'status-ok' : (roleLower === 'superadmin' ? 'status-trash' : 'status-pending');
                             html += `<tr class="${rowClass}">
                                 <td style="font-weight: 500;">${escapeHtml(u.firstName + ' ' + u.lastName)}</td>
                                 <td class="text-muted">@${escapeHtml(u.username)}</td>
-                                <td><span class="status-badge ${roleClass}">${escapeHtml(u.role || 'consumer')}</span></td>
+                                <td><span class="status-badge ${roleClass}">${escapeHtml(u.role || 'basic-user')}</span></td>
                                 <td>${isBlocked ? '<span class="status-badge status-trash">Blocked</span>' : '<span class="status-badge status-ok">Active</span>'}</td>
                                 <td>
                                     <div style="display: flex; gap: 4px;">
                                         <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="editUser('${u.id}')">Edit</button>
                                         ${!isSelf ? (isBlocked ?
-                                            `<button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: #10b981; border-color: #10b981;" onclick="blockUser('${u.id}', 'unblock')">Unblock</button>` :
-                                            `<button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: #ef4444; border-color: #ef4444;" onclick="blockUser('${u.id}', 'block')">Block</button>`) : ''}
+                                    `<button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: #10b981; border-color: #10b981;" onclick="blockUser('${u.id}', 'unblock')">Unblock</button>` :
+                                    `<button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: #ef4444; border-color: #ef4444;" onclick="blockUser('${u.id}', 'block')">Block</button>`) : ''}
                                         ${!isSelf ? `<button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: #ef4444; border-color: #ef4444;" onclick="openDeleteModal('${u.id}', '${escapeHtml(u.firstName + ' ' + u.lastName)}')">Delete</button>` : ''}
                                     </div>
                                 </td>
@@ -589,7 +497,7 @@ $pageTitle = 'User Management';
 
         function closeResponseModal() { document.getElementById('responseModal').style.display = 'none'; }
 
-        document.getElementById('confirmDeleteBtn').onclick = function() {
+        document.getElementById('confirmDeleteBtn').onclick = function () {
             if (!userToDelete) return;
             const fd = new FormData(); fd.append('user_id', userToDelete);
             fetch(api + '/superadmin_user_delete.php', { method: 'POST', body: fd })
@@ -637,7 +545,7 @@ $pageTitle = 'User Management';
 
             document.getElementById('prevBtn').style.display = (n === 0) ? 'none' : 'inline-block';
             const role = document.getElementById('role').value;
-            const maxStep = (role === 'consumer') ? totalSteps - 1 : totalSteps - 2;
+            const maxStep = (role === 'basic-user') ? totalSteps - 1 : totalSteps - 2;
 
             if (n >= maxStep) {
                 document.getElementById('nextBtn').style.display = 'none';
@@ -669,7 +577,7 @@ $pageTitle = 'User Management';
             document.getElementById('userForm').reset();
             document.getElementById('userId').value = '';
             document.getElementById('pwHint').textContent = '(Required for new user)';
-            document.getElementById('role').value = 'consumer';
+            document.getElementById('role').value = 'basic-user';
             document.getElementById('role').dispatchEvent(new Event('change'));
             AdminUserValidation.clearAllErrors();
             currentStep = 0; showStep(0);
@@ -681,67 +589,117 @@ $pageTitle = 'User Management';
         function closeUserModal() { document.getElementById('userModal').style.display = 'none'; }
 
         function editUser(userId) {
-            const u = usersMap[userId]; if (!u) return;
+            const u = usersMap[userId];
+            if (!u) return;
+
             editingUserId = u.id;
             AdminUserValidation.setEditMode(true);
             document.getElementById('modalTitle').textContent = 'Edit User';
+            
+            // Core Identity
             document.getElementById('userId').value = u.id;
-            document.getElementById('customId').value = u.id;
+            document.getElementById('customId').value = u.id || '';
             
-            const fields = ['firstName', 'lastName', 'middleInitial', 'extension', 'sex', 'birthdate', 'purok', 'barangay', 'city', 'province', 'zipCode', 'country', 'username', 'email'];
-            fields.forEach(f => { if (document.getElementById(f)) document.getElementById(f).value = u[f] || ''; });
+            // Personal Information
+            document.getElementById('firstName').value = u.firstName || '';
+            document.getElementById('lastName').value = u.lastName || '';
+            document.getElementById('middleInitial').value = u.middleInitial || '';
+            document.getElementById('extension').value = u.extension || '';
+            document.getElementById('sex').value = (u.sex || '').toLowerCase();
             
-            // Robust Role Assignment
-            const roleEl = document.getElementById('role');
-            if (roleEl && u.role) {
-                const rVal = u.role.toLowerCase();
-                roleEl.value = rVal;
-                roleEl.dispatchEvent(new Event('change'));
+            // Date Restoration
+            if (u.birthdate) {
+                // Ensure we get YYYY-MM-DD even if DB returns datetime or weird format
+                let rawDate = String(u.birthdate).split(' ')[0].split('T')[0];
+                if (rawDate && rawDate !== '0000-00-00') {
+                    // Try to normalize to YYYY-MM-DD
+                    const parts = rawDate.split(/[-/]/);
+                    if (parts.length === 3) {
+                        if (parts[0].length === 4) document.getElementById('birthdate').value = parts.join('-');
+                        else if (parts[2].length === 4) document.getElementById('birthdate').value = `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
+                    } else {
+                        document.getElementById('birthdate').value = rawDate;
+                    }
+                } else {
+                    document.getElementById('birthdate').value = '';
+                }
+            } else {
+                document.getElementById('birthdate').value = '';
             }
+            document.getElementById('age').value = u.age || '';
+
+            // Address Information
+            document.getElementById('purok').value = u.purok || '';
+            document.getElementById('barangay').value = u.barangay || '';
+            document.getElementById('city').value = u.city || '';
+            document.getElementById('province').value = u.province || '';
+            document.getElementById('zipCode').value = u.zipCode || '';
+            document.getElementById('country').value = u.country || '';
+
+            // Account Credentials
+            document.getElementById('username').value = u.username || '';
+            document.getElementById('email').value = u.email || '';
+            document.getElementById('password').value = '';
+            document.getElementById('pwHint').textContent = '(Leave blank to keep current)';
+
+            // Role Handling
+            const roleEl = document.getElementById('role');
+            roleEl.value = (u.role || 'basic-user').toLowerCase();
             
-            if (u.role === 'consumer') {
+            // Security Questions
+            if (u.role === 'basic-user') {
                 if (document.getElementById('sq1')) document.getElementById('sq1').value = u.secure_question || '';
                 if (document.getElementById('sq2')) document.getElementById('sq2').value = u.secure_question2 || '';
                 if (document.getElementById('sq3')) document.getElementById('sq3').value = u.secure_question3 || '';
             }
 
-            if (u.birthdate) {
-                const bd = new Date(u.birthdate), today = new Date();
-                let age = today.getFullYear() - bd.getFullYear();
-                if (today.getMonth() < bd.getMonth() || (today.getMonth() === bd.getMonth() && today.getDate() < bd.getDate())) age--;
-                document.getElementById('age').value = age;
-            }
-            document.getElementById('password').value = '';
-            document.getElementById('pwHint').textContent = '(Leave blank to keep current)';
-            AdminUserValidation.clearAllErrors();
-            currentStep = 0; showStep(0);
+            // Sync all change events and clear errors
+            setTimeout(() => {
+                const event = new Event('change');
+                ['role', 'sex', 'birthdate', 'username', 'email'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.dispatchEvent(event);
+                });
+                AdminUserValidation.clearAllErrors();
+            }, 50);
+
+            currentStep = 0;
+            showStep(0);
             document.getElementById('userModal').style.display = 'flex';
         }
 
-        document.getElementById('userForm').onsubmit = async function(e) {
+        document.getElementById('userForm').onsubmit = async function (e) {
             e.preventDefault();
             const isEdit = !!editingUserId;
             const role = document.getElementById('role').value;
-            
+
             try {
-                // SEQUENTIAL VALIDATION: Stay on the step that has the error
+                // SEQUENTIAL VALIDATION: Check all steps before allowed to save
                 if (!(await AdminUserValidation.validatePersonalInfo())) { showStep(0); return; }
                 if (!AdminUserValidation.validateAddress()) { showStep(1); return; }
                 if (!(await AdminUserValidation.validateCredentials(isEdit))) { showStep(2); return; }
-                if (role === 'consumer' && !AdminUserValidation.validateSecurityQuestions(isEdit)) { showStep(3); return; }
-                
-                const fd = new FormData(this); 
-                fd.set('id', editingUserId);
-                
+                if (role === 'basic-user' && !AdminUserValidation.validateSecurityQuestions(isEdit)) { showStep(3); return; }
+
+                const fd = new FormData(this);
+                fd.append('id', editingUserId);
+
                 const response = await fetch(api + '/superadmin_user_save.php', { method: 'POST', body: fd });
-                const d = await response.json();
-                
-                if (d.success) { 
-                    closeUserModal(); 
-                    showResponse(true, 'User data has been saved successfully.'); 
-                    loadUsers(currentPage); 
-                } else { 
-                    showResponse(false, d.error || 'Failed to save user data.'); 
+                const text = await response.text();
+                let d;
+                try {
+                    d = JSON.parse(text);
+                } catch (e) {
+                    console.error('Server returned non-JSON:', text);
+                    showResponse(false, 'Server Error: ' + text.substring(0, 100));
+                    return;
+                }
+
+                if (d.success) {
+                    closeUserModal();
+                    showResponse(true, 'User data has been saved successfully.');
+                    loadUsers(currentPage);
+                } else {
+                    showResponse(false, d.error || 'Failed to save user data.');
                 }
             } catch (err) {
                 console.error('Submission Error:', err);
@@ -751,57 +709,57 @@ $pageTitle = 'User Management';
 
         const privilegesConfig = {
             'superadmin': [
-                { desc: 'Access My Profile',                          has: true  },
-                { desc: 'Change Password',                             has: true  },
-                { desc: 'Manage All Users (Admins & Consumers)',       has: true  },
-                { desc: 'Approve / Reject Registration Requests',      has: true  },
-                { desc: 'Block / Unblock Any User',                    has: true  },
-                { desc: 'Manage All Restaurants & Menus',              has: true  },
-                { desc: 'View & Manage All Orders',                    has: true  },
-                { desc: 'View Full Login Audit Logs',                  has: true  },
-                { desc: 'Assign / Change User Roles',                  has: true  },
-                { desc: 'Full System Administration',                  has: true  },
+                { desc: 'Access My Profile', has: true },
+                { desc: 'Change Password', has: true },
+                { desc: 'Manage All Users (Admins & Consumers)', has: true },
+                { desc: 'Approve / Reject Registration Requests', has: true },
+                { desc: 'Block / Unblock Any User', has: true },
+                { desc: 'Manage All playgrounds & Packages', has: true },
+                { desc: 'View & Manage All Bookings', has: true },
+                { desc: 'View Full Login Audit Logs', has: true },
+                { desc: 'Assign / Change User Roles', has: true },
+                { desc: 'Full System Administration', has: true },
             ],
             'admin': [
-                { desc: 'Access My Profile',                          has: true  },
-                { desc: 'Change Password',                             has: true  },
-                { desc: 'Manage Consumer Accounts',                    has: true  },
-                { desc: 'Approve / Reject Registration Requests',      has: true  },
-                { desc: 'Block / Unblock Consumers',                   has: true  },
-                { desc: 'Manage Restaurants & Menu Items',             has: true  },
-                { desc: 'View & Manage Orders',                        has: true  },
-                { desc: 'View Login History (Own)',                     has: true  },
-                { desc: 'Manage All Users (Admins)',                   has: false },
-                { desc: 'Assign / Change User Roles',                  has: false },
-                { desc: 'Full System Administration',                  has: false },
+                { desc: 'Access My Profile', has: true },
+                { desc: 'Change Password', has: true },
+                { desc: 'Manage Basic User Accounts', has: true },
+                { desc: 'Approve / Reject Registration Requests', has: true },
+                { desc: 'Block / Unblock Consumers', has: true },
+                { desc: 'Manage playgrounds & Play Packages', has: true },
+                { desc: 'View & Manage Bookings', has: true },
+                { desc: 'View Login History (Own)', has: true },
+                { desc: 'Manage All Users (Admins)', has: false },
+                { desc: 'Assign / Change User Roles', has: false },
+                { desc: 'Full System Administration', has: false },
             ],
-            'consumer': [
-                { desc: 'Access My Profile',                          has: true  },
-                { desc: 'Change Password',                             has: true  },
-                { desc: 'Browse & Order Food',                         has: true  },
-                { desc: 'Manage Cart & Checkout',                      has: true  },
-                { desc: 'View Personal Order History',                 has: true  },
-                { desc: 'Save Favourite Restaurants',                  has: true  },
-                { desc: 'Manage Payment Methods',                      has: true  },
-                { desc: 'Manage Consumer Accounts',                    has: false },
-                { desc: 'Approve / Reject Registration Requests',      has: false },
-                { desc: 'Block / Unblock Users',                       has: false },
-                { desc: 'Manage Restaurants & Menu Items',             has: false },
-                { desc: 'Full System Administration',                  has: false },
+            'basic-user': [
+                { desc: 'Access My Profile', has: true },
+                { desc: 'Change Password', has: true },
+                { desc: 'Browse playgrounds & Book', has: true },
+                { desc: 'Manage Bookings', has: true },
+                { desc: 'View Personal Booking History', has: true },
+                { desc: 'Save Favourite playgrounds', has: true },
+                { desc: 'Manage Payment Methods', has: true },
+                { desc: 'Manage Basic User Accounts', has: false },
+                { desc: 'Approve / Reject Registration Requests', has: false },
+                { desc: 'Block / Unblock Users', has: false },
+                { desc: 'Manage playgrounds & Play Packages', has: false },
+                { desc: 'Full System Administration', has: false },
             ],
         };
 
         function viewPrivileges(role, name) {
             document.getElementById('privUserName').textContent = name + ' (' + role + ')';
-            const privs = privilegesConfig[role] || privilegesConfig['consumer'];
+            const privs = privilegesConfig[role] || privilegesConfig['basic-user'];
             const listHtml = privs.map(p => `
-                <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px;
+                <div style="display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:12px;
                      background:${p.has ? '#f0fdf4' : '#f8fafc'};
-                     border:1px solid ${p.has ? '#bbf7d0' : '#e2e8f0'}; margin-bottom:4px;">
+                     border:1px solid ${p.has ? '#bbf7d0' : '#e2e8f0'}; margin-bottom:8px; transition: all 0.2s;">
                     <i class="fa-solid ${p.has ? 'fa-circle-check' : 'fa-circle-xmark'}"
-                       style="color:${p.has ? '#16a34a' : '#94a3b8'}; font-size:17px;"></i>
-                    <span style="font-size:0.875rem; font-weight:500; color:${p.has ? '#166534' : '#64748b'};
-                          text-decoration:${p.has ? 'none' : 'line-through'};">${p.desc}</span>
+                       style="color:${p.has ? '#16a34a' : '#94a3b8'}; font-size:18px;"></i>
+                    <span style="font-size:0.9rem; font-weight:600; color:${p.has ? '#166534' : '#64748b'};
+                          text-decoration:${p.has ? 'none' : 'line-through'}; opacity:${p.has ? '1' : '0.6'};">${p.desc}</span>
                 </div>`).join('');
             document.getElementById('privContent').innerHTML = listHtml;
             document.getElementById('privModal').style.display = 'flex';
@@ -814,7 +772,24 @@ $pageTitle = 'User Management';
                 AdminUserValidation.init(document.getElementById('userForm'), { apiBase: api, roleSelector: '#role', securitySection: '#securitySection' });
             }
             loadUsers(1);
+
+            // Password Toggle logic
+            document.addEventListener('click', function(e) {
+                const toggle = e.target.closest('.pw-toggle');
+                if (toggle) {
+                    const input = document.getElementById(toggle.dataset.target);
+                    const icon = toggle.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.replace('fa-eye', 'fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.replace('fa-eye-slash', 'fa-eye');
+                    }
+                }
+            });
         });
     </script>
 </body>
+
 </html>

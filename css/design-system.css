@@ -1,37 +1,42 @@
 /**
- * NAIGO Design System — Online Restaurant Reservation System
- * Teal & Gold premium palette
+ * LittleLands Design System — Playground Booking System
+ * Vibrant, Playful & Premium Palette
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Nunito:wght@300;400;600;700&display=swap');
 
 :root {
-    /* Brand — Dark Teal & Gold */
-    --primary-color: #1a5653;
-    --primary-hover: #134240;
-    --primary-light: rgba(26, 86, 83, 0.08);
-    --secondary-color: #c8a951;
-    --secondary-hover: #b8963e;
-    --secondary-light: rgba(200, 169, 81, 0.12);
+    /* Brand — Playful Blue & Sunny Yellow */
+    --primary-color: #4facfe;
+    --primary-hover: #00f2fe;
+    --primary-light: rgba(79, 172, 254, 0.08);
+    --secondary-color: #fbbf24;
+    --secondary-hover: #f59e0b;
+    --secondary-light: rgba(251, 191, 36, 0.12);
+    --accent-fun: #ec4899; /* Fun Pink */
 
     /* Neutrals */
-    --text-main: #1a1f2e;
-    --text-heading: #0f1419;
+    --text-main: #2d3748;
+    --text-heading: #1a202c;
     --text-secondary: #4a5568;
     --text-muted: #718096;
-    --bg-body: #f8f9fa;
-    --bg-card: #ffffff;
-    --bg-elevated: #ffffff;
     --border-light: #e2e8f0;
     --border-medium: #cbd5e0;
+    --border-color: #e2e8f0; /* Alias for wider compatibility */
+
+    /* Backgrounds */
+    --bg-body: #f0f9ff;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-elevated: #ffffff;
 
     /* Feedback */
-    --error-color: #dc2626;
-    --error-bg: #fef2f2;
-    --success-color: #059669;
-    --success-bg: #ecfdf5;
-    --warning-color: #d97706;
-    --warning-bg: #fffbeb;
+    --error-color: #ef4444;
+    --error-bg: #fee2e2;
+    --success-color: #10b981;
+    --success-bg: #d1fae5;
+    --warning-color: #f59e0b;
+    --warning-bg: #fef3c7;
 
     /* Spacing scale (4px base) */
     --space-1: 0.25rem;
@@ -45,8 +50,8 @@
     --space-12: 3rem;
 
     /* Typography */
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Nunito', sans-serif;
     --text-xs: 0.75rem;
     --text-sm: 0.875rem;
     --text-base: 1rem;
@@ -54,19 +59,19 @@
     --text-xl: 1.25rem;
     --text-2xl: 1.5rem;
     --text-3xl: 1.875rem;
-    --leading-tight: 1.25;
+    --leading-tight: 1.2;
     --leading-normal: 1.5;
     --leading-relaxed: 1.625;
 
-    /* Radius & shadow */
-    --radius-sm: 0.5rem;
-    --radius-md: 0.75rem;
-    --radius-lg: 1rem;
-    --radius-xl: 1.25rem;
+    /* Radius & shadow - More rounded for playful feel */
+    --radius-sm: 0.75rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
     --radius-full: 9999px;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 12px rgba(79, 172, 254, 0.15);
+    --shadow-lg: 0 12px 30px rgba(79, 172, 254, 0.2);
 
     /* Motion */
     --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
@@ -371,7 +376,7 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     font-size: 1.1rem;
 }
 
-/* Tables */
+/* Areas */
 .data-table,
 .orders-table {
     width: 100%;
@@ -493,3 +498,116 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     gap: 0.75rem; padding-top: 1.5rem;
 }
 .pagination-info { font-size: 0.9rem; color: var(--text-muted); }
+
+/* =========== Shared Footer =========== */
+.dashboard-footer {
+    background: #1a202c;
+    color: #ffffff;
+    padding: 5rem 2rem 2rem;
+    border-top: none;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 4rem;
+    text-align: left;
+}
+
+.footer-brand .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+
+.footer-tagline {
+    color: #94a3b8;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    max-width: 360px;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 1.25rem;
+}
+
+.footer-socials a {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-socials a:hover {
+    background: var(--primary-color);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+}
+
+.footer-links h4 {
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 1.75rem;
+    letter-spacing: 0.02em;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links ul li {
+    margin-bottom: 1rem;
+}
+
+.footer-links ul li a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.footer-links ul li a:hover {
+    color: var(--primary-color);
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    padding-top: 2.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.footer-bottom p {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+@media (max-width: 900px) {
+    .footer-top {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+}

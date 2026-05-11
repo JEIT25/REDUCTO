@@ -15,19 +15,11 @@ $status = trim($_GET['status'] ?? '');
 $startDate = trim($_GET['startDate'] ?? '');
 $endDate = trim($_GET['endDate'] ?? '');
 
-$blockWhere = "1=1";
 $appWhere = "a.target_type = 'user'";
-
-$blockParams = [];
-$blockTypes = '';
 $appParams = [];
 $appTypes = '';
 
 if ($status !== '') {
-    $blockWhere .= " AND r.status = ?";
-    $blockParams[] = $status;
-    $blockTypes .= 's';
-
     $appWhere .= " AND a.status = ?";
     $appParams[] = $status;
     $appTypes .= 's';
@@ -35,10 +27,6 @@ if ($status !== '') {
 
 if ($search !== '') {
     $searchToken = "%$search%";
-    $blockWhere .= " AND (u1.firstName LIKE ? OR u1.lastName LIKE ? OR u2.firstName LIKE ? OR u2.lastName LIKE ? OR u2.username LIKE ? OR r.reason LIKE ?)";
-    array_push($blockParams, $searchToken, $searchToken, $searchToken, $searchToken, $searchToken, $searchToken);
-    $blockTypes .= 'ssssss';
-
     $appWhere .= " AND (u1.firstName LIKE ? OR u1.lastName LIKE ? OR u.firstName LIKE ? OR u.lastName LIKE ? OR u.username LIKE ? OR a.reason LIKE ?)";
     array_push($appParams, $searchToken, $searchToken, $searchToken, $searchToken, $searchToken, $searchToken);
     $appTypes .= 'ssssss';
@@ -46,47 +34,19 @@ if ($search !== '') {
 
 // Date Range Filtering
 if ($startDate !== '') {
-    $blockWhere .= " AND DATE(r.created_at) >= ?";
-    $blockParams[] = $startDate;
-    $blockTypes .= 's';
-
     $appWhere .= " AND DATE(a.created_at) >= ?";
     $appParams[] = $startDate;
     $appTypes .= 's';
 }
 if ($endDate !== '') {
-    $blockWhere .= " AND DATE(r.created_at) <= ?";
-    $blockParams[] = $endDate;
-    $blockTypes .= 's';
-
     $appWhere .= " AND DATE(a.created_at) <= ?";
     $appParams[] = $endDate;
     $appTypes .= 's';
 }
 
 try {
+    // Unified query from the 'approvals' table
     $sql = "
-        SELECT
-            r.id as request_id,
-            r.request_type as type,
-            r.reason,
-            r.status,
-            r.created_at,
-            NULL as review_notes,
-            u1.firstName as requester_first,
-            u1.lastName as requester_last,
-            u2.firstName as target_first,
-            u2.lastName as target_last,
-            u2.username as target_username,
-            u2.id as target_id,
-            'user_block_requests' as source_table
-        FROM user_block_requests r
-        JOIN users u1 ON r.requester_id = u1.id
-        JOIN users u2 ON r.target_id = u2.id
-        WHERE $blockWhere
-
-        UNION ALL
-
         SELECT
             a.id as request_id,
             a.action_type as type,
@@ -105,13 +65,12 @@ try {
         JOIN users u1 ON a.requested_by = u1.id
         JOIN users u ON a.target_id = u.id
         WHERE $appWhere
-
         ORDER BY created_at DESC
         LIMIT ? OFFSET ?
     ";
 
-    $allParams = array_merge($blockParams, $appParams, [$limit, $offset]);
-    $allTypes = $blockTypes . $appTypes . 'ii';
+    $allParams = array_merge($appParams, [$limit, $offset]);
+    $allTypes = $appTypes . 'ii';
 
     $stmt = $conn->prepare($sql);
     if ($stmt) {
@@ -123,8 +82,11 @@ try {
 
         $requests = [];
         while ($row = $result->fetch_assoc()) {
-            if ($row['type'] === 'register_consumer') {
+            if ($row['type'] === 'register_basic-user') {
                 $row['request_type'] = 'registration';
+            }
+            elseif ($row['type'] === 'register_admin') {
+                $row['request_type'] = 'admin_reg';
             }
             elseif ($row['type'] === 'delete_user') {
                 $row['request_type'] = 'deletion';
@@ -136,19 +98,11 @@ try {
         }
         $stmt->close();
 
-        $countSql = "
-            SELECT SUM(cnt) as total FROM (
-                SELECT COUNT(*) as cnt FROM user_block_requests r JOIN users u1 ON r.requester_id = u1.id JOIN users u2 ON r.target_id = u2.id WHERE $blockWhere
-                UNION ALL
-                SELECT COUNT(*) as cnt FROM approvals a JOIN users u1 ON a.requested_by = u1.id JOIN users u ON a.target_id = u.id AND a.target_type = 'user' WHERE $appWhere
-            ) as totals
-        ";
+        $countSql = "SELECT COUNT(*) as total FROM approvals a JOIN users u1 ON a.requested_by = u1.id JOIN users u ON a.target_id = u.id WHERE $appWhere";
         $countStmt = $conn->prepare($countSql);
         if ($countStmt) {
-            $countParams = array_merge($blockParams, $appParams);
-            $countTypes = $blockTypes . $appTypes;
-            if (strlen($countTypes) > 0) {
-                $countStmt->bind_param($countTypes, ...$countParams);
+            if (strlen($appTypes) > 0) {
+                $countStmt->bind_param($appTypes, ...$appParams);
             }
             $countStmt->execute();
             $totalResult = $countStmt->get_result()->fetch_assoc();

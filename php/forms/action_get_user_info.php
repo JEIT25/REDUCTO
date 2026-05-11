@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // --- NEW: Block forgot password for pending registrations ---
         if ((int) ($user['is_blocked'] ?? 0) === 1) {
-            $regStmt = $conn->prepare("SELECT status FROM approvals WHERE action_type = 'register_consumer' AND target_type = 'user' AND target_id = ? ORDER BY created_at DESC LIMIT 1");
+            $regStmt = $conn->prepare("SELECT status FROM approvals WHERE action_type = 'register_basic-user' AND target_type = 'user' AND target_id = ? ORDER BY created_at DESC LIMIT 1");
             if ($regStmt) {
                 $regStmt->bind_param('s', $user['id']);
                 $regStmt->execute();

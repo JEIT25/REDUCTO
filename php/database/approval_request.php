@@ -1,7 +1,7 @@
 <?php
 /**
  * Create an approval request (admin only).
- * POST: action_type (delete_user|delete_restaurant|delete_menu_item), target_type, target_id, reason
+ * POST: action_type (delete_user|delete_playground|delete_play_package), target_type, target_id, reason
  */
 header('Content-Type: application/json');
 ob_start();
@@ -35,8 +35,8 @@ $targetType = trim($_POST['target_type'] ?? '');
 $targetId = trim($_POST['target_id'] ?? '');
 $reason = trim($_POST['reason'] ?? '');
 
-$allowedActions = ['delete_user', 'delete_restaurant', 'delete_menu_item'];
-$allowedTargets = ['user', 'restaurant', 'menu_item'];
+$allowedActions = ['delete_user', 'delete_playground', 'delete_play_package'];
+$allowedTargets = ['user', 'playground', 'play_package'];
 if (!in_array($actionType, $allowedActions) || !in_array($targetType, $allowedTargets) || $targetId === '') {
     ob_clean();
     echo json_encode(['success' => false, 'error' => 'Invalid action_type, target_type, or target_id']);
@@ -58,3 +58,4 @@ try {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 ob_end_flush();
+

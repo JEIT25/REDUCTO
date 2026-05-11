@@ -19,7 +19,7 @@ $where = [];
 $params = [];
 $types = '';
 
-if ($userRole === 'consumer') {
+if ($userRole === 'basic-user') {
     $where[] = 'r.user_id = ?';
     $params[] = $userId;
     $types .= 's';
@@ -42,23 +42,23 @@ if ($search) {
 $whereClause = count($where) > 0 ? 'WHERE ' . implode(' AND ', $where) : '';
 
 // Count total
-$countSql = "SELECT COUNT(*) as total FROM reservations r JOIN restaurants rest ON r.restaurant_id = rest.id $whereClause";
+$countSql = "SELECT COUNT(*) as total FROM bookings r JOIN playgrounds rest ON r.playground_id = rest.id $whereClause";
 $stmt = $conn->prepare($countSql);
 if ($types)
     $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $total = $stmt->get_result()->fetch_assoc()['total'];
 
-// Get reservations
-$sql = "SELECT r.*, rest.name AS restaurant_name, rest.cuisine_type, rest.address AS restaurant_address,
-        rt.table_number, rt.capacity AS table_capacity, rt.location AS table_location,
+// Get bookings
+$sql = "SELECT r.*, rest.name AS playground_name, rest.playground_type, rest.address AS playground_address,
+        rt.area_name, rt.capacity AS Area_capacity, rt.location_type AS Area_location,
         u.firstName, u.lastName
-        FROM reservations r
-        JOIN restaurants rest ON r.restaurant_id = rest.id
-        LEFT JOIN restaurant_tables rt ON r.table_id = rt.id
+        FROM bookings r
+        JOIN playgrounds rest ON r.playground_id = rest.id
+        LEFT JOIN play_areas rt ON r.area_id = rt.id
         JOIN users u ON r.user_id = u.id
         $whereClause
-        ORDER BY r.reservation_date DESC, r.reservation_time DESC
+        ORDER BY r.booking_date DESC, r.booking_time DESC
         LIMIT ? OFFSET ?";
 
 $paramsFull = array_merge($params, [$limit, $offset]);
@@ -68,17 +68,21 @@ $stmt->bind_param($typesFull, ...$paramsFull);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$reservations = [];
+$bookings = [];
 while ($row = $result->fetch_assoc()) {
-    $reservations[] = $row;
+    $bookings[] = $row;
 }
 
 echo json_encode([
     'success' => true,
-    'reservations' => $reservations,
+    'bookings' => $bookings,
     'total' => intval($total),
     'page' => $page,
     'pages' => ceil($total / $limit),
     'total_pages' => ceil($total / $limit)
 ]);
 $conn->close();
+
+
+
+
