@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 11, 2026 at 04:59 PM
+-- Generation Time: May 13, 2026 at 04:56 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,8 +47,7 @@ CREATE TABLE `approvals` (
 
 INSERT INTO `approvals` (`id`, `requested_by`, `action_type`, `target_type`, `target_id`, `reason`, `status`, `reviewed_by`, `review_notes`, `created_at`, `updated_at`) VALUES
 (1, '0000-0009', 'register_basic-user', 'user', '0000-0001', 'New basic-user registration', 'approved', '0000-0001', '', '2026-05-10 16:32:01', '2026-05-11 14:34:24'),
-(2, '0000-0002', 'block', 'user', '0000-0009', 'needs blocking', 'approved', '0000-0001', '', '2026-05-11 14:36:01', '2026-05-11 14:38:42'),
-(3, '1111-1111', 'register_basic-user', 'user', '1111-1111', 'New basic-user registration', 'pending', NULL, NULL, '2026-05-11 14:58:02', '2026-05-11 14:58:02');
+(2, '0000-0002', 'block', 'user', '0000-0009', 'needs blocking', 'approved', '0000-0001', '', '2026-05-11 14:36:01', '2026-05-11 14:38:42');
 
 -- --------------------------------------------------------
 
@@ -150,7 +149,12 @@ INSERT INTO `login_logs` (`id`, `user_id`, `action`, `log_time`) VALUES
 (38, '0000-0001', 'logout', '2026-05-11 22:38:51'),
 (39, '0000-0001', 'login', '2026-05-11 22:39:00'),
 (40, '0000-0002', 'logout', '2026-05-11 22:40:09'),
-(41, '0000-0009', 'login', '2026-05-11 22:40:23');
+(41, '0000-0009', 'login', '2026-05-11 22:40:23'),
+(43, '0000-0001', 'login', '2026-05-13 08:25:50'),
+(44, '0000-0001', 'logout', '2026-05-13 08:26:44'),
+(55, '0000-0001', 'login', '2026-05-13 09:41:38'),
+(56, '0000-0001', 'logout', '2026-05-13 10:52:39'),
+(59, '0000-0001', 'login', '2026-05-13 10:53:32');
 
 -- --------------------------------------------------------
 
@@ -318,8 +322,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `firstName`, `lastName`, `middleInitial`, `extension`, `sex`, `birthdate`, `age`, `purok`, `barangay`, `city`, `province`, `zipCode`, `country`, `username`, `email`, `password`, `secure_question`, `secure_answer`, `secure_question2`, `secure_answer2`, `secure_question3`, `secure_answer3`, `created_at`, `role`, `status`, `is_blocked`) VALUES
 ('0000-0001', 'Sofia', 'Gentle', 'L', '', 'female', '1991-01-01', 35, 'Purok 5', 'Baranggay 6', 'City of Cabadbaran', 'Agusan Del Norte', '8605', 'Philippines', 'sofia21', 'sofia@gmail.com', '$2y$10$wUvm2TPEMDp18g2vvqwGhOTM1AHKrd4QU0tWB1/xARV2Ndb7amMgO', 'Who is your bestfriend in elementary?', '$2y$10$3LloJ36C.1iqFkYWm9Uzo.vXqUl1QKUwkonYl7Z.4lPRVnq6kwcYe', 'What is your favorite food?', '$2y$10$1m0OaTO8mw4BcyXHVWXjteWT6LdU63VjwwAsvGajs0XkoNSzLROwK', 'What is the name of your first pet?', '$2y$10$KxRhXJZhIjYnYZsPrMV.Q.vmlmAvSOK5RuAmUd2.hmScBaFB8QVo.', '2026-05-10 13:43:07', 'superadmin', 'registered', 0),
 ('0000-0002', 'Ken', 'Sindy', '', '', 'male', '2003-02-02', 23, 'Purok 5', 'Baranggay 6', 'City of Cabadbaran', 'Agusan Del Norte', '8605', 'Philippines', 'ken21', 'kenn@gmail.com', '$2y$10$5qoqVc7RZEiOMLeEF9Ts8uRpkY8icgd06n7x.J5f3OEVYjaKKZVBC', '', '$2y$10$4Qd1G7uMd.Srg7jErbPZJ.H7wX/E3urkz3Z9QgZw6nU7UyVG6byD6', '', '$2y$10$X8S7MSepRrR14e2nUU8kJeD7Q5mWNyS1iMTyc5C66ljKEVEh9b34q', '', '$2y$10$Ot8qZdIZP95rLTONID5jmOmTBjL8gnOO8/PMLOT88HH9w11T6rh.u', '2026-05-11 14:32:59', 'admin', 'registered', 0),
-('0000-0009', 'Maria', 'Cruz', '', '', 'female', '2004-02-02', 22, 'Purok 5', 'Baranggay 6', 'City of Cabadbaran', 'Agusan Del Norte', '8605', 'Philippines', 'maria21', 'maria@gmail.com', '$2y$10$rO6cUC/Qx6JO43iep0Qoye747ghHPWClLv3RDsCR4ikx8wBSimskS', 'What is the name of your pet?', '$2y$10$9EH1QJTElxfbRSzdLFk8TuZZwvXA.5yJ7xV1Okx5O4Aa6WJ.Ycc36', 'What is your favorite food?', '$2y$10$F3Xfyjn35oV/VD7Vq3RO.Oez1SNB93A.EhUlFTKOEudp/K1Yuz6tS', 'What is the name of your first pet?', '$2y$10$S14eNZuqgpRWFJtMk/qVPeuSXKCO6FUF9NMblxFtdJV9RTFDtqCua', '2026-05-10 16:32:01', 'basic-user', 'registered', 0),
-('1111-1111', 'Jero', 'Herd', '', '', 'male', '2003-02-02', 23, 'Purok 5', 'Baranggay 6', 'City of Cabadbaran', 'Agusan Del Norte', '8605', 'Philippines', 'jero21', 'jero@gmail.com', '$2y$10$dEJ9.fB6PR5RjlmTUK0M.e5f3n8dsGln4rUzUZILo1ucOrAGXHbxO', 'What is the name of your pet?', '$2y$10$oLpV8pbFsWn2kP9fcGNxNOAAq51S1YtWiM1lW41E90XsMji4a0qdS', 'What elementary school did you attend?', '$2y$10$YIScwM8LBA6t8oAh3s7k1.lnkLj7f6tIKUAwunOR9MFQeR8hHgMGS', 'What is your favorite movie?', '$2y$10$XGPIl0dq8qXH5Is0rhEGEuk8oWd9Y7ZiWKnyH98WwhhtdSVPH0Nw.', '2026-05-11 14:58:02', 'basic-user', 'pending', 1);
+('0000-0009', 'Maria', 'Cruz', '', '', 'female', '2004-02-02', 22, 'Purok 5', 'Baranggay 6', 'City of Cabadbaran', 'Agusan Del Norte', '8605', 'Philippines', 'maria21', 'maria@gmail.com', '$2y$10$rO6cUC/Qx6JO43iep0Qoye747ghHPWClLv3RDsCR4ikx8wBSimskS', 'What is the name of your pet?', '$2y$10$9EH1QJTElxfbRSzdLFk8TuZZwvXA.5yJ7xV1Okx5O4Aa6WJ.Ycc36', 'What is your favorite food?', '$2y$10$F3Xfyjn35oV/VD7Vq3RO.Oez1SNB93A.EhUlFTKOEudp/K1Yuz6tS', 'What is the name of your first pet?', '$2y$10$S14eNZuqgpRWFJtMk/qVPeuSXKCO6FUF9NMblxFtdJV9RTFDtqCua', '2026-05-10 16:32:01', 'basic-user', 'registered', 0);
 
 --
 -- Indexes for dumped tables
@@ -445,7 +448,7 @@ ALTER TABLE `cart_packages`
 -- AUTO_INCREMENT for table `login_logs`
 --
 ALTER TABLE `login_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `package_orders`
@@ -463,7 +466,7 @@ ALTER TABLE `package_order_items`
 -- AUTO_INCREMENT for table `password_reset_otp`
 --
 ALTER TABLE `password_reset_otp`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `playgrounds`
