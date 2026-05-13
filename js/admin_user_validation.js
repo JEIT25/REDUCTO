@@ -78,6 +78,12 @@ const AdminUserValidation = (function () {
         // Age / birthdate
         if (!validateAge()) ok = false;
 
+        // Name quality checks
+        if (!checkConsecLetters(['firstName', 'lastName', 'middleInitial'])) ok = false;
+        if (!checkNoNumbers(['firstName', 'lastName', 'middleInitial'])) ok = false;
+        if (!checkNoSpecialChars(['firstName', 'lastName', 'middleInitial', 'extension'])) ok = false;
+        if (!checkUpperFirst(['firstName', 'lastName', 'middleInitial'])) ok = false;
+        if (!checkLowerAfterFirst(['firstName', 'lastName'])) ok = false;
         if (!checkNoDoubleSpace(['firstName', 'lastName', 'middleInitial', 'extension'])) ok = false;
         if (extension.trim() && !extensionPatternChecker(extension)) ok = false;
 
@@ -249,7 +255,9 @@ const AdminUserValidation = (function () {
     }
 
     function checkLowerAfterFirst(fields) {
-        return true; 
+        let ok = true;
+        fields.forEach(f => { const v = val(f).trim(); if (v.length > 1 && /[A-Z]/.test(v.slice(1))) { showError(f, 'Must be lowercase after the first letter.'); ok = false; } });
+        return ok;
     }
 
     function checkNoDoubleSpace(fields) {

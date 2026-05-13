@@ -33,14 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'] ?? '';
         $role = $_POST['role'] ?? 'basic-user';
 
-        // Security questions
-        $secure_question = $_POST['secure_question'] ?? '';
-        $secure_answer = $_POST['secure_answer'] ?? '';
-        $secure_question2 = $_POST['secure_question2'] ?? '';
-        $secure_answer2 = $_POST['secure_answer2'] ?? '';
-        $secure_question3 = $_POST['secure_question3'] ?? '';
-        $secure_answer3 = $_POST['secure_answer3'] ?? '';
-
         if (!$firstName || !$lastName || !$username || !$email || !$sex || !$birthdate || $birthdate === '0000-00-00') {
             ob_clean();
             echo json_encode(['success' => false, 'error' => 'Valid birthdate is required.']);
@@ -109,17 +101,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $params[] = password_hash($password, PASSWORD_DEFAULT);
             }
 
-            if ($role === 'basic-user' && $secure_question && $secure_answer) {
-                $sql .= ", secure_question=?, secure_answer=?, secure_question2=?, secure_answer2=?, secure_question3=?, secure_answer3=?";
-                $types .= "ssssss";
-                $params[] = $secure_question;
-                $params[] = password_hash($secure_answer, PASSWORD_DEFAULT);
-                $params[] = $secure_question2;
-                $params[] = password_hash($secure_answer2, PASSWORD_DEFAULT);
-                $params[] = $secure_question3;
-                $params[] = password_hash($secure_answer3, PASSWORD_DEFAULT);
-            }
-
             $sql .= " WHERE id=?";
             $types .= "s";
             $params[] = $id;
@@ -153,25 +134,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // INSERT
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $ans1 = password_hash($secure_answer, PASSWORD_DEFAULT);
-            $ans2 = password_hash($secure_answer2, PASSWORD_DEFAULT);
-            $ans3 = password_hash($secure_answer3, PASSWORD_DEFAULT);
-
             $isBlocked = 0; // Active, skip approval since superadmin is adding
             $status = 'registered';
-            $sql = "INSERT INTO users (id, firstName, lastName, middleInitial, extension, sex, birthdate, age, purok, barangay, city, province, zipCode, country, username, email, password, role, is_blocked, status, secure_question, secure_answer, secure_question2, secure_answer2, secure_question3, secure_answer3) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            // Check if we are creating a new Superadmin
+            $creatorSwap = false;
+            if ($role === 'superadmin') {
+                $creatorSwap = true;
+                $creatorId = $_SESSION['user']['id'];
+            }
+
+            $sql = "INSERT INTO users (id, firstName, lastName, middleInitial, extension, sex, birthdate, age, purok, barangay, city, province, zipCode, country, username, email, password, role, is_blocked, status) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 ob_clean();
                 echo json_encode(['success' => false, 'error' => 'Insert prepare failed: ' . $conn->error]);
                 exit;
             }
-            $stmt->bind_param("sssssssissssssssssisssssss", $customId, $firstName, $lastName, $middleInitial, $extension, $sex, $birthdate, $age, $purok, $barangay, $city, $province, $zipCode, $country, $username, $email, $hashedPassword, $role, $isBlocked, $status, $secure_question, $ans1, $secure_question2, $ans2, $secure_question3, $ans3);
+            $stmt->bind_param("sssssssissssssssssis", $customId, $firstName, $lastName, $middleInitial, $extension, $sex, $birthdate, $age, $purok, $barangay, $city, $province, $zipCode, $country, $username, $email, $hashedPassword, $role, $isBlocked, $status);
             
             if ($stmt->execute()) {
-                ob_clean();
-                echo json_encode(['success' => true]);
+                if ($creatorSwap) {
+                    // Block the creator
+                    $conn->query("UPDATE users SET is_blocked = 1 WHERE id = '$creatorId'");
+                    // We will return a specific flag so frontend can logout
+                    ob_clean();
+                    echo json_encode(['success' => true, 'superadmin_swap' => true]);
+                } else {
+                    ob_clean();
+                    echo json_encode(['success' => true]);
+                }
             } else {
                 ob_clean();
                 echo json_encode(['success' => false, 'error' => $stmt->error]);

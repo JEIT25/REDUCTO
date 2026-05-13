@@ -20,10 +20,13 @@ if ($user_id === $_SESSION['user']['id']) {
     exit;
 }
 
-$is_blocked = ($action === 'block') ? 1 : 0;
-
-$stmt = $conn->prepare("UPDATE users SET is_blocked = ? WHERE id = ?");
-$stmt->bind_param('is', $is_blocked, $user_id);
+if ($action === 'unblock') {
+    $stmt = $conn->prepare("UPDATE users SET is_blocked = 0, status = 'registered' WHERE id = ?");
+    $stmt->bind_param('s', $user_id);
+} else {
+    $stmt = $conn->prepare("UPDATE users SET is_blocked = 1 WHERE id = ?");
+    $stmt->bind_param('s', $user_id);
+}
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true]);

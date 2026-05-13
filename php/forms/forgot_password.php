@@ -18,6 +18,7 @@ $basePath = getBasePath(__FILE__);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?php echo $basePath; ?>css/serve_asset.php?file=design-system.css">
     <link rel="stylesheet" href="<?php echo $basePath; ?>css/serve_asset.php?file=login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>Forgot Password - FoodGrab</title>
     <style>
         .step-container { display: none; }
@@ -98,14 +99,20 @@ $basePath = getBasePath(__FILE__);
             <!-- STEP 3: Verify OTP -->
             <div id="step3" class="step-container">
                 <h3>Enter Verification Code</h3>
+                <div id="step3UserInfo"></div>
                 <p>Please enter the 6-digit code sent to your email.</p>
 
                 <form id="formStep3" onsubmit="handleStep3(event)">
                     <div class="form-group">
                         <label for="otp_code">Verification Code:</label>
-                        <input type="password" id="otp_code" name="otp_code" required
-                               placeholder="000000" maxlength="6" pattern="[0-9]{6}"
-                               autocomplete="one-time-code" style="text-align: center; letter-spacing: 0.5em; font-size: 1.25rem;">
+                        <div class="password-container" style="position: relative;">
+                            <input type="password" id="otp_code" name="otp_code" required
+                                placeholder="000000" maxlength="6" pattern="[0-9]{6}"
+                                autocomplete="one-time-code" style="text-align: center; letter-spacing: 0.5em; font-size: 1.25rem; padding-right: 45px;">
+                            <button type="button" id="toggleOTP" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b;">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-primary" id="btnVerify">Verify Code</button>
@@ -185,19 +192,23 @@ $basePath = getBasePath(__FILE__);
                     // Populate User Card
                     const card = document.getElementById('userInfoCard');
                     card.innerHTML = `
-                        <div class="user-card-row">
-                            <span class="user-card-label">ID Number</span>
-                            <span class="user-card-value">${data.user.id}</span>
-                        </div>
-                        <div class="user-card-row">
-                            <span class="user-card-label">Name</span>
-                            <span class="user-card-value">${data.user.name}</span>
-                        </div>
-                        <div class="user-card-row">
-                            <span class="user-card-label">Email</span>
-                            <span class="user-card-value">${data.user.email}</span>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px dashed #e2e8f0; margin-bottom: 4px;">
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Account ID:</span>
+                                <span style="font-family: monospace; font-weight: 800; color: #1e293b; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 1rem;">${data.user.id}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #64748b;">Username:</span>
+                                <span style="font-weight: 600; color: #334155;">@${data.user.username}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #64748b;">Email Address:</span>
+                                <span style="font-weight: 600; color: #334155;">${data.user.email}</span>
+                            </div>
                         </div>
                     `;
+                    // Store for step 3
+                    window.currentUserInfo = data.user;
                     showStep('step2');
                 } else {
                     showError(data.message || 'User not found');
@@ -222,6 +233,22 @@ $basePath = getBasePath(__FILE__);
                 const data = await response.json(); // It returns success/message
 
                 if (data.success) {
+                // Update Step 3 header with user info
+                const userInfoHeader = document.getElementById('step3UserInfo');
+                userInfoHeader.innerHTML = `
+                    <div style="background: #f8fafc; padding: 1.25rem; border-radius: 15px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #64748b;">Username:</span>
+                                <span style="font-weight: 600; color: #334155;">@${window.currentUserInfo.username}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #64748b;">Email Address:</span>
+                                <span style="font-weight: 600; color: #334155;">${window.currentUserInfo.email}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
                     showStep('step3');
                     startTimer();
                 } else {
@@ -307,12 +334,25 @@ $basePath = getBasePath(__FILE__);
                 } else {
                     showError(data.message);
                 }
-            } catch (err) {
-                showError('Network error.');
             } finally {
                 resendBtn.textContent = 'Resend Code';
                 resendBtn.disabled = false;
             }
+        }
+
+        // --- OTP Toggle ---
+        if (document.getElementById('toggleOTP')) {
+            document.getElementById('toggleOTP').addEventListener('click', function() {
+                const input = document.getElementById('otp_code');
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
         }
     </script>
 </body>

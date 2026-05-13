@@ -214,75 +214,7 @@ $pageTitle = 'Basic User Management';
                         </div>
                 </div>
 
-                <!-- STEP 4: Security -->
-                <div class="form-step" id="step3" style="display:none;">
-                    <div class="form-section-title"><i class="fa-solid fa-shield-halved"></i> Security Questions</div>
-                    <div id="securitySection" class="form-grid">
-                            <div class="form-group">
-                                <label>Question 1 <span class="required">*</span></label>
-                                <select name="secure_question" id="sq1" class="input-field">
-                                    <option value="">-- Choose --</option>
-                                    <option value="Who is your bestfriend in elementary?">Who is your bestfriend in elementary?</option>
-                                    <option value="What is the name of your pet?">What is the name of your pet?</option>
-                                    <option value="Who is your favorite teacher in highschool?">Who is your favorite teacher in highschool?</option>
-                                    <option value="In what city were you born?">In what city were you born?</option>
-                                </select>
-                                <span class="validation-message" id="sq1Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Answer 1 <span class="required">*</span></label>
-                                <div class="password-container">
-                                    <input type="password" name="secure_answer" id="sa1" class="input-field">
-                                    <button type="button" class="pw-toggle" data-target="sa1">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                </div>
-                                <span class="validation-message" id="sa1Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Question 2 <span class="required">*</span></label>
-                                <select name="secure_question2" id="sq2" class="input-field">
-                                    <option value="">-- Choose --</option>
-                                    <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
-                                    <option value="What elementary school did you attend?">What elementary school did you attend?</option>
-                                    <option value="What is your favorite food?">What is your favorite food?</option>
-                                    <option value="What is the name of your best friend?">What is the name of your best friend?</option>
-                                </select>
-                                <span class="validation-message" id="sq2Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Answer 2 <span class="required">*</span></label>
-                                <div class="password-container">
-                                    <input type="password" name="secure_answer2" id="sa2" class="input-field">
-                                    <button type="button" class="pw-toggle" data-target="sa2">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                </div>
-                                <span class="validation-message" id="sa2Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Question 3 <span class="required">*</span></label>
-                                <select name="secure_question3" id="sq3" class="input-field">
-                                    <option value="">-- Choose --</option>
-                                    <option value="What is your father's middle name?">What is your father's middle name?</option>
-                                    <option value="What street did you grow up on?">What street did you grow up on?</option>
-                                    <option value="What is your favorite movie?">What is your favorite movie?</option>
-                                    <option value="What year did you graduate high school?">What year did you graduate high school?</option>
-                                </select>
-                                <span class="validation-message" id="sq3Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Answer 3 <span class="required">*</span></label>
-                                <div class="password-container">
-                                    <input type="password" name="secure_answer3" id="sa3" class="input-field">
-                                    <button type="button" class="pw-toggle" data-target="sa3">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                </div>
-                                <span class="validation-message" id="sa3Error"></span>
-                            </div>
-                    </div>
-                </div>
+
 
                 <div class="form-navigation" style="display:flex; justify-content:space-between; margin-top:2rem; border-top:1px solid #f1f5f9; padding-top:1.5rem;">
                     <button type="button" id="prevBtn" onclick="prevStep()" class="btn-secondary" style="display:none;">
@@ -374,7 +306,7 @@ $pageTitle = 'Basic User Management';
         let editingUserId = '';
         let usersMap = {};
         let currentStep = 0;
-        const totalSteps = 4;
+        const totalSteps = 3;
 
         function loadUsers(page = 1) {
             currentPage = page;
@@ -590,7 +522,6 @@ $pageTitle = 'Basic User Management';
         document.getElementById('consumerForm').onsubmit = async function(e) {
             e.preventDefault();
             const isEdit = !!editingUserId;
-            if (!AdminUserValidation.validateSecurityQuestions(isEdit)) return;
             if (!(await AdminUserValidation.validateAll(isEdit))) { showStep(0); return; }
 
             const fd = new FormData(this);

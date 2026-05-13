@@ -226,6 +226,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const el = document.getElementById(id);
             if (el) el.textContent = '';
         });
+
+        // Header visibility logic
+        const headers = document.querySelectorAll('.fp-user-info-header');
+        if (stepId !== 'fpStep1') {
+            headers.forEach(h => {
+                h.style.display = 'block';
+                const extras = h.querySelectorAll('.fp-extra-info');
+                // Show username and email in all steps for clarity
+                extras.forEach(ex => ex.style.display = 'flex');
+                
+                // Show ID row ONLY in Account Confirmation (Step 2)
+                const idRows = h.querySelectorAll('.fp-id-row');
+                idRows.forEach(row => row.style.display = (stepId === 'fpStep2') ? 'flex' : 'none');
+            });
+        } else {
+            headers.forEach(h => h.style.display = 'none');
+        }
     }
 
     // --- STEP 1: Verify ID ---
@@ -259,12 +276,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (data.success) {
                     fpCurrentUserId = data.user.id;
-                    const infoBox = document.getElementById('fpUserInfo');
-                    infoBox.innerHTML = `
-                        <p style="margin:5px 0"><strong>ID:</strong> ${data.user.id}</p>
-                        <p style="margin:5px 0"><strong>Name:</strong> ${data.user.name}</p>
-                        <p style="margin:5px 0"><strong>Email:</strong> ${data.user.email}</p>
-                    `;
+                    // Populate persistent headers with labeled layout
+                    document.querySelectorAll('.fp-val-id').forEach(el => el.textContent = data.user.id);
+                    document.querySelectorAll('.fp-val-username').forEach(el => el.textContent = '@' + (data.user.username || ""));
+                    document.querySelectorAll('.fp-val-email').forEach(el => el.textContent = data.user.email || "");
+
                     showFpStep('fpStep2');
                 } else {
                     errEl.textContent = data.message || 'ID not found.';
@@ -344,8 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
 
                 if (data.success) {
-                    // Fetch security questions before showing Step 4
-                    fetchSecurityQuestions();
+                    showFpStep('fpStep4');
                 } else {
                     errEl.textContent = data.message || 'Invalid code.';
                 }
@@ -358,37 +373,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function fetchSecurityQuestions() {
-        const errEl = document.getElementById('fpStep3Error');
-        try {
-            const apiUrl = window.BASE_URL + '/php/forms/action_get_security_questions.php';
-            const res = await fetch(apiUrl);
-            const data = await res.json();
-
-            if (data.success) {
-                document.getElementById('fpQLabel1').textContent = data.questions[0];
-                document.getElementById('fpQLabel2').textContent = data.questions[1];
-                document.getElementById('fpQLabel3').textContent = data.questions[2];
-                showFpStep('fpStep4');
-            } else {
-                errEl.textContent = data.message || 'Failed to load security questions.';
-            }
-        } catch (e) {
-            errEl.textContent = 'Network error loading questions.';
-        }
-    }
-
     // --- STEP 4: Verify Security Answers ---
     const fpStep4Btn = document.getElementById('fpStep4Btn');
     if (fpStep4Btn) {
         fpStep4Btn.addEventListener('click', async () => {
+            const q1 = document.getElementById('fpQ1').value;
             const ans1 = document.getElementById('fpAns1').value.trim();
+            const q2 = document.getElementById('fpQ2').value;
             const ans2 = document.getElementById('fpAns2').value.trim();
+            const q3 = document.getElementById('fpQ3').value;
             const ans3 = document.getElementById('fpAns3').value.trim();
             const errEl = document.getElementById('fpStep4Error');
 
-            if (!ans1 || !ans2 || !ans3) {
-                errEl.textContent = 'Please answer all questions.';
+            if (!q1 || !ans1 || !q2 || !ans2 || !q3 || !ans3) {
+                errEl.textContent = 'Please select and answer all questions.';
                 return;
             }
 
@@ -396,8 +394,11 @@ document.addEventListener('DOMContentLoaded', () => {
             fpStep4Btn.textContent = 'Verifying...';
 
             const fd = new FormData();
+            fd.append('secure_question', q1);
             fd.append('secure_answer', ans1);
+            fd.append('secure_question2', q2);
             fd.append('secure_answer2', ans2);
+            fd.append('secure_question3', q3);
             fd.append('secure_answer3', ans3);
 
             try {

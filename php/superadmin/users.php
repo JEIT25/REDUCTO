@@ -124,10 +124,6 @@ $pageTitle = 'User Management';
                     <div class="step-circle">3</div>
                     <span class="step-label">Account</span>
                 </div>
-                <div class="step-item" id="stepIndicator3">
-                    <div class="step-circle">4</div>
-                    <span class="step-label">Security</span>
-                </div>
             </div>
 
             <form id="userForm" novalidate class="modal-scrollable">
@@ -267,88 +263,7 @@ $pageTitle = 'User Management';
                         </div>
                 </div>
 
-                <!-- STEP 4: Security -->
-                <div class="form-step" id="step3" style="display:none;">
-                    <div id="securitySection">
-                        <div class="form-section-title">Security Setup</div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Security Question 1 <span class="hint">(Optional)</span></label>
-                                <select name="secure_question" id="sq1" class="input-field">
-                                    <option value="">-- Select Question --</option>
-                                    <option value="Who is your bestfriend in elementary?">Who is your bestfriend in
-                                        elementary?</option>
-                                    <option value="What is the name of your pet?">What is the name of your pet?</option>
-                                    <option value="Who is your favorite teacher in highschool?">Who is your favorite
-                                        teacher in highschool?</option>
-                                    <option value="What was your first car?">What was your first car?</option>
-                                    <option value="In what city were you born?">In what city were you born?</option>
-                                </select>
-                                <span class="validation-message" id="sq1Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Answer 1 <span class="hint">(Optional)</span></label>
-                                <div class="password-container" style="position:relative;">
-                                    <input type="password" name="secure_answer" id="sa1" class="input-field">
-                                    <i class="fa-solid fa-eye eye-icon pw-toggle" onclick="toggleAnswerVisibility(this)"
-                                        style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
-                                </div>
-                                <span class="validation-message" id="sa1Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Security Question 2 <span class="hint">(Optional)</span></label>
-                                <select name="secure_question2" id="sq2" class="input-field">
-                                    <option value="">-- Select Question --</option>
-                                    <option value="What is your mother's maiden name?">What is your mother's maiden
-                                        name?</option>
-                                    <option value="What elementary school did you attend?">What elementary school did
-                                        you attend?</option>
-                                    <option value="What is your favorite food?">What is your favorite food?</option>
-                                    <option value="What was your childhood nickname?">What was your childhood nickname?
-                                    </option>
-                                    <option value="What is the name of your best friend?">What is the name of your best
-                                        friend?</option>
-                                </select>
-                                <span class="validation-message" id="sq2Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Answer 2 <span class="hint">(Optional)</span></label>
-                                <div class="password-container" style="position:relative;">
-                                    <input type="password" name="secure_answer2" id="sa2" class="input-field">
-                                    <i class="fa-solid fa-eye eye-icon pw-toggle" onclick="toggleAnswerVisibility(this)"
-                                        style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
-                                </div>
-                                <span class="validation-message" id="sa2Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Security Question 3 <span class="hint">(Optional)</span></label>
-                                <select name="secure_question3" id="sq3" class="input-field">
-                                    <option value="">-- Select Question --</option>
-                                    <option value="What is your father's middle name?">What is your father's middle
-                                        name?</option>
-                                    <option value="What street did you grow up on?">What street did you grow up on?
-                                    </option>
-                                    <option value="What is your favorite movie?">What is your favorite movie?</option>
-                                    <option value="What is the name of your first pet?">What is the name of your first
-                                        pet?</option>
-                                    <option value="What year did you graduate high school?">What year did you graduate
-                                        high school?</option>
-                                </select>
-                                <span class="validation-message" id="sq3Error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Answer 3 <span class="hint">(Optional)</span></label>
-                                <div class="password-container" style="position:relative;">
-                                    <input type="password" name="secure_answer3" id="sa3" class="input-field">
-                                    <i class="fa-solid fa-eye eye-icon pw-toggle" onclick="toggleAnswerVisibility(this)"
-                                        style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#94a3b8;"></i>
-                                </div>
-                                <span class="validation-message" id="sa3Error"></span>
-                            </div>
-                        </div>
-                        <p class="hint" style="margin-top: 1.5rem; font-style: italic; background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid var(--primary-color);">Note: If you are editing an existing user, you can leave these blank to keep the current security settings.</p>
-                    </div>
-                </div>
+
 
                 <div class="form-navigation" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9;">
                     <div class="nav-left">
@@ -523,7 +438,7 @@ $pageTitle = 'User Management';
         }
 
         let currentStep = 0;
-        const totalSteps = 4;
+        const totalSteps = 3;
 
         function showStep(n) {
             document.querySelectorAll('.form-step').forEach(el => el.style.display = 'none');
@@ -544,10 +459,8 @@ $pageTitle = 'User Management';
             });
 
             document.getElementById('prevBtn').style.display = (n === 0) ? 'none' : 'inline-block';
-            const role = document.getElementById('role').value;
-            const maxStep = (role === 'basic-user') ? totalSteps - 1 : totalSteps - 2;
-
-            if (n >= maxStep) {
+            
+            if (n >= totalSteps - 1) {
                 document.getElementById('nextBtn').style.display = 'none';
                 document.getElementById('submitBtn').style.display = 'inline-block';
             } else {
@@ -678,7 +591,12 @@ $pageTitle = 'User Management';
                 if (!(await AdminUserValidation.validatePersonalInfo())) { showStep(0); return; }
                 if (!AdminUserValidation.validateAddress()) { showStep(1); return; }
                 if (!(await AdminUserValidation.validateCredentials(isEdit))) { showStep(2); return; }
-                if (role === 'basic-user' && !AdminUserValidation.validateSecurityQuestions(isEdit)) { showStep(3); return; }
+
+                if (!isEdit && role === 'superadmin') {
+                    if (!confirm("CRITICAL: Creating a new Superadmin will BLOCK your current account and log you out for security reasons. The new account will become the primary Superadmin. Do you wish to proceed?")) {
+                        return;
+                    }
+                }
 
                 const fd = new FormData(this);
                 fd.append('id', editingUserId);
@@ -696,6 +614,11 @@ $pageTitle = 'User Management';
 
                 if (d.success) {
                     closeUserModal();
+                    if (d.superadmin_swap) {
+                        alert("Account swapped successfully. You will now be logged out. Please log in with the new Superadmin credentials.");
+                        window.location.href = '../auth/logout.php';
+                        return;
+                    }
                     showResponse(true, 'User data has been saved successfully.');
                     loadUsers(currentPage);
                 } else {

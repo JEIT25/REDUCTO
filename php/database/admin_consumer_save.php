@@ -103,17 +103,6 @@ try {
             $params[] = password_hash($password, PASSWORD_DEFAULT);
         }
 
-        if ($secure_question && $secure_answer) {
-            $sql .= ", secure_question=?, secure_answer=?, secure_question2=?, secure_answer2=?, secure_question3=?, secure_answer3=?";
-            $types .= "ssssss";
-            $params[] = $secure_question;
-            $params[] = password_hash($secure_answer, PASSWORD_DEFAULT);
-            $params[] = $secure_question2;
-            $params[] = password_hash($secure_answer2, PASSWORD_DEFAULT);
-            $params[] = $secure_question3;
-            $params[] = password_hash($secure_answer3, PASSWORD_DEFAULT);
-        }
-
         $sql .= " WHERE id=?";
         $types .= "s";
         $params[] = $id;
@@ -145,15 +134,12 @@ try {
         $isBlocked = 0; // Admin adding user -> active
         $status = 'registered';
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $ans1 = password_hash($secure_answer, PASSWORD_DEFAULT);
-        $ans2 = password_hash($secure_answer2, PASSWORD_DEFAULT);
-        $ans3 = password_hash($secure_answer3, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO users (id, firstName, lastName, middleInitial, extension, sex, birthdate, age, purok, barangay, city, province, zipCode, country, username, email, password, role, is_blocked, status, secure_question, secure_answer, secure_question2, secure_answer2, secure_question3, secure_answer3) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (id, firstName, lastName, middleInitial, extension, sex, birthdate, age, purok, barangay, city, province, zipCode, country, username, email, password, role, is_blocked, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if ($stmt) {
-            $stmt->bind_param("sssssssissssssssssisssssss", $customId, $firstName, $lastName, $middleInitial, $extension, $sex, $birthdate, $age, $purok, $barangay, $city, $province, $zipCode, $country, $username, $email, $hashedPassword, $role, $isBlocked, $status, $secure_question, $ans1, $secure_question2, $ans2, $secure_question3, $ans3);
+            $stmt->bind_param("sssssssissssssssssis", $customId, $firstName, $lastName, $middleInitial, $extension, $sex, $birthdate, $age, $purok, $barangay, $city, $province, $zipCode, $country, $username, $email, $hashedPassword, $role, $isBlocked, $status);
             if ($stmt->execute()) {
                 ob_clean();
                 echo json_encode(['success' => true]);
