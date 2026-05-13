@@ -211,10 +211,6 @@ CREATE TABLE `password_reset_otp` (
 -- Dumping data for table `password_reset_otp`
 --
 
-INSERT INTO `password_reset_otp` (`id`, `user_id`, `otp_code`, `expires_at`, `used`, `created_at`, `resend_count`, `ip_address`, `last_resend_at`) VALUES
-(2, '0000-0000', '424397', '2026-05-10 16:15:09', 1, '2026-05-10 14:00:09', 2, '::1', NULL),
-(3, '0000-0000', '970434', '2026-05-10 16:16:49', 1, '2026-05-10 14:01:49', 1, '::1', NULL);
-
 -- --------------------------------------------------------
 
 --
